@@ -6,7 +6,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-# Create your models here.
+class ActiveUserManager(models.Manager):
+    def get_queryset(self):
+        return super(ActiveUserManager, self).get_queryset().filter(user__is_active=True)
+
 
 class ImagerProfile(models.Model):
     """The library Patro and all of its attributes."""
@@ -16,6 +19,8 @@ class ImagerProfile(models.Model):
         related_name='profile',
         on_delete=models.CASCADE,
     )
+
+    active = ActiveUserManager()
 
     PHOTOGRAPHY_CHOICES = (
         ('NATURE', 'Nature'),
@@ -34,14 +39,11 @@ class ImagerProfile(models.Model):
     type_of_photography = models.CharField(max_length=144,
                                            choices=PHOTOGRAPHY_CHOICES)
 
-    def active(self):
-        return ImagerProfile.objects.filter(ImagerProfile.is_active)
-
 
 @receiver(post_save, sender=User)
 def make_profile_from_user(sender, instance, **kwargs):
     if kwargs['created']:
         profile = ImagerProfile(user=instance)
     else:
-        profile = ImagerProfile.objects.first()
+        profile = instance
     profile.save()
