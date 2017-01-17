@@ -40,6 +40,7 @@ class ImagerProfile(models.Model):
     phone = PhoneNumberField()
     type_of_photography = models.CharField(max_length=144,
                                            choices=PHOTOGRAPHY_CHOICES)
+    objects = models.Manager()
     active = ActiveUsersManger()
 
 
