@@ -6,7 +6,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-# Create your models here.
 class ActiveUsersManger(models.Manager):
     """Active user manager."""
 
@@ -18,17 +17,18 @@ class ActiveUsersManger(models.Manager):
 class ImagerProfile(models.Model):
     """The library Patro and all of its attributes."""
 
+    active = ActiveUsersManger()
     user = models.OneToOneField(
         User,
         related_name='profile',
         on_delete=models.CASCADE,
     )
-
     PHOTOGRAPHY_CHOICES = (
         ('NATURE', 'Nature'),
         ('URBAN', 'Urban'),
         ('PORTRAIT', 'Portrait'),
     )
+
     camera_type = models.CharField(max_length=128, blank=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
@@ -43,11 +43,24 @@ class ImagerProfile(models.Model):
     objects = models.Manager()
     active = ActiveUsersManger()
 
+    def __str__(self):
+        """Return string representation of model instance."""
+        string = {
+            'camera_type': self.camera_type,
+            'address': self.address,
+            'bio': self.bio,
+            'website': self.website,
+            'hireable': self.hireable,
+            'travel_radius': self.travel_radius,
+            'phone': self.phone,
+            'type_of_photography': self.type_of_photography
+        }
+        return str(string)
+
 
 @receiver(post_save, sender=User)
 def make_profile_from_user(sender, instance, **kwargs):
+    """When a user is created, they get a profile."""
     if kwargs['created']:
         profile = ImagerProfile(user=instance)
-    else:
-        profile = ImagerProfile.objects.first()
-    profile.save()
+        profile.save()
