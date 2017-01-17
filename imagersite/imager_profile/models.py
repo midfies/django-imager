@@ -27,9 +27,16 @@ class ImagerProfile(models.Model):
         ('NATURE', 'Nature'),
         ('URBAN', 'Urban'),
         ('PORTRAIT', 'Portrait'),
+        ('OTHER', 'Other'),
+    )
+    CAMERA_CHOICES = (
+        ('IPHONE', 'iPhone'),
+        ('NIKON', 'Nikon'),
+        ('CANNON', 'Cannon'),
+        ('OTHER', 'Other'),
     )
 
-    camera_type = models.CharField(max_length=128, blank=True)
+    camera_type = models.CharField(max_length=128, choices=CAMERA_CHOICES)
     address = models.CharField(max_length=255, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     website = models.CharField(max_length=255, blank=True, null=True)
@@ -42,6 +49,11 @@ class ImagerProfile(models.Model):
                                            choices=PHOTOGRAPHY_CHOICES)
     objects = models.Manager()
     active = ActiveUsersManger()
+
+    @property
+    def is_active(self):
+        """Return if user of profile is active."""
+        return self.user.is_active
 
     def __str__(self):
         """Return string representation of model instance."""

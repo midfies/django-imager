@@ -48,9 +48,12 @@ class ProfileTestCase(TestCase):
         query = ImagerProfile.active.all()
         self.assertIsInstance(query[0], ImagerProfile)
 
-    def test_updating_profile_works(self):
-        """Test that updating profile updates the db."""
-        user = self.users[0]
-        user.profile.bio = "This is the new bio."
-        query = User.objects.first()
-        self.assertTrue(query.profile.bio == "This is the new bio.")
+    # def test_str_method(self):
+    #     pass
+
+    # def test_active_user_has_active_profile(self):
+    #     pass
+
+    # def test_inactive_user_has_inactive_profile(self):
+    #     pass
+
