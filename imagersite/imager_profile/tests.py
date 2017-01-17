@@ -56,4 +56,3 @@ class ProfileTestCase(TestCase):
 
     # def test_inactive_user_has_inactive_profile(self):
     #     pass
-
