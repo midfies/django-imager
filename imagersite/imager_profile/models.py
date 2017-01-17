@@ -24,12 +24,15 @@ class ImagerProfile(models.Model):
     )
     camera_type = models.CharField(max_length=128, blank=True)
     address = models.CharField(max_length=255, blank=True, null=True)
-    bio = models.TextField(blank=True,)
-    website = models.CharField(max_length=255, blank=True,)
+    bio = models.TextField(blank=True, null=True)
+    website = models.CharField(max_length=255, blank=True, null=True)
     hireable = models.BooleanField(default=True)
-    travel_radius = models.DecimalField(max_digits=5, decimal_places=2)
+    travel_radius = models.DecimalField(max_digits=5,
+                                        decimal_places=2,
+                                        null=True)
     phone = PhoneNumberField()
-    type_of_photography = models.CharField(choices=PHOTOGRAPHY_CHOICES)
+    type_of_photography = models.CharField(max_length=144,
+                                           choices=PHOTOGRAPHY_CHOICES)
 
     def active(self):
         return ImagerProfile.objects.filter(ImagerProfile.is_active)
@@ -37,5 +40,8 @@ class ImagerProfile(models.Model):
 
 @receiver(post_save, sender=User)
 def make_profile_from_user(sender, instance, **kwargs):
-    new_profile = ImagerProfile(user=instance)
-    new_profile.save()
+    if kwargs['created']:
+        profile = ImagerProfile(user=instance)
+    else:
+        profile = ImagerProfile.objects.first()
+    profile.save()

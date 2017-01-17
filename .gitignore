@@ -97,3 +97,5 @@ share
 
 #misc
 *.sqlite
+
+*/migrations/*
