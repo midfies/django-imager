@@ -7,6 +7,13 @@ from django.dispatch import receiver
 
 
 # Create your models here.
+class ActiveUsersManger(models.Manager):
+    """Active user manager."""
+
+    def get_queryset(self):
+        """Get the query set of active users."""
+        return super(ActiveUsersManger, self).get_queryset().filter(user__is_active=True)
+
 
 class ImagerProfile(models.Model):
     """The library Patro and all of its attributes."""
@@ -33,9 +40,7 @@ class ImagerProfile(models.Model):
     phone = PhoneNumberField()
     type_of_photography = models.CharField(max_length=144,
                                            choices=PHOTOGRAPHY_CHOICES)
-
-    def active(self):
-        return ImagerProfile.objects.filter(ImagerProfile.is_active)
+    active = ActiveUsersManger()
 
 
 @receiver(post_save, sender=User)
