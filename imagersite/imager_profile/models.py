@@ -16,19 +16,16 @@ class ImagerProfile(models.Model):
         related_name='profile',
         on_delete=models.CASCADE,
     )
-    NATURE = 'Nature'
-    URBAN = 'Urban'
-    PORTRAIT = 'Portrait'
 
     PHOTOGRAPHY_CHOICES = (
-        (NATURE, 'Nature'),
-        (URBAN, 'Urban'),
-        (PORTRAIT, 'Portrait'),
+        ('NATURE', 'Nature'),
+        ('URBAN', 'Urban'),
+        ('PORTRAIT', 'Portrait'),
     )
-    camera_type = models.CharField(max_length=128)
+    camera_type = models.CharField(max_length=128, blank=True,)
     address = models.CharField(max_length=255, blank=True, null=True)
-    bio = models.TextField()
-    website = models.CharField(max_length=255)
+    bio = models.TextField(blank=True,)
+    website = models.CharField(max_length=255, blank=True,)
     hireable = models.BooleanField(default=True)
     travel_radius = models.DecimalField(max_digits=5, decimal_places=2)
     phone = PhoneNumberField()
