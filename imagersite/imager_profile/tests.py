@@ -53,5 +53,4 @@ class ProfileTestCase(TestCase):
         user = self.users[0]
         user.profile.bio = "This is the new bio."
         query = User.objects.first()
-        import pdb; pdb.set_trace()
         self.assertTrue(query.profile.bio == "This is the new bio.")
