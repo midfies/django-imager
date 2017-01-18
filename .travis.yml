@@ -7,7 +7,7 @@ services:
   - postgresql
 
 before_script:
-  - psql -c "create database imagerDB;" -U postgres
+  - psql -c "create database imager_db;" -U postgres
 
 # command to install dependencies
 install:
