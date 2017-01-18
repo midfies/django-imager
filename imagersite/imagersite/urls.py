@@ -16,11 +16,11 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from imagersite.views import home_view
+from imagersite import views
 
 
 urlpatterns = [
-    url(r'^$', home_view, name='home'),
+    url(r'^$', views.home_view, name='home'),
     url(r'^accounts/', include('registration.backends.hmac.urls')),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),

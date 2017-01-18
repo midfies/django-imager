@@ -38,9 +38,12 @@
                   </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                  <li class="active"><a href="{% url 'login' %}">Login <span class="sr-only">(current)</span></a></li>
+                  {% if user.is_authenticated %}
                   <li><a href="{% url 'logout' %}">Logout</a></li>
-                  <li><a href="/accounts/register">Register</a></li>
+                  {% else %}
+                  <li><a href="{% url 'registration_register' %}">Register</a></li>
+                  <li class="active"><a href="{% url 'login' %}">Login <span class="sr-only">(current)</span></a></li>
+                  {% endif %}
                 </ul>
               </div><!--/.nav-collapse -->
             </div><!--/.container-fluid -->
