@@ -46,7 +46,9 @@ class ImagerProfile(models.Model):
                                         null=True)
     phone = PhoneNumberField()
     type_of_photography = models.CharField(max_length=144,
-                                           choices=PHOTOGRAPHY_CHOICES)
+                                           choices=PHOTOGRAPHY_CHOICES,
+                                           null=True)
+
     objects = models.Manager()
     active = ActiveUsersManger()
 
