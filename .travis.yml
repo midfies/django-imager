@@ -8,6 +8,7 @@ services:
 
 before_script:
   - psql -c "create database imagerDB;" -U postgres
+  - imagersite/manage.py migrate
 
 # command to install dependencies
 install:
