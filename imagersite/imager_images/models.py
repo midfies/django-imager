@@ -20,14 +20,14 @@ class Photo(models.Model):
     )
 
     title = models.CharField(max_length=128)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, null=True)
     date_uploaded = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     date_published = models.DateTimeField(blank=True, null=True)
     published = models.CharField(max_length=144,
                                  choices=PUBLISH_CHOICES,
-                                 null=True
-                                 )
+                                 default='PRIVATE')
+    photo = models.ImageField(upload_to='', blank=True, null=True)
 
 
 class Album(models.Model):
@@ -39,6 +39,11 @@ class Album(models.Model):
         on_delete=models.CASCADE,
     )
 
+    photos = models.ManyToManyField(
+        Photo,
+        related_name='albums'
+    )
+
     PUBLISH_CHOICES = (
         ('PRIVATE', 'Private'),
         ('SHARED', 'Shared'),
@@ -46,12 +51,11 @@ class Album(models.Model):
     )
 
     title = models.CharField(max_length=128)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, null=True)
     date_uploaded = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     date_published = models.DateTimeField(blank=True, null=True)
     published = models.CharField(max_length=144,
                                  choices=PUBLISH_CHOICES,
-                                 null=True
-                                 )
-    cover_photo = models.ImageField(upload_to='')
+                                 default='PRIVATE')
+    cover_photo = models.ImageField(upload_to='', blank=True, null=True)
