@@ -60,12 +60,10 @@ class ImagerProfile(models.Model):
     def __str__(self):
         """Return string representation of model instance."""
         string = {
+            'username': self.user.username,
             'camera_type': self.camera_type,
             'address': self.address,
-            'bio': self.bio,
             'website': self.website,
-            'hireable': self.hireable,
-            'travel_radius': self.travel_radius,
             'phone': self.phone,
             'type_of_photography': self.type_of_photography
         }

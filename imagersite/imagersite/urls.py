@@ -24,9 +24,10 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^$', views.home_view, name='home'),
     url(r'^accounts/', include('registration.backends.hmac.urls')),
-    url(r'^login/$', auth_views.login, name='login'),
-    url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
+    url(r'^login/', auth_views.login, name='login'),
+    url(r'^logout/', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^admin/', admin.site.urls),
+    url(r'^profile/', include('imager_profile.urls'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
