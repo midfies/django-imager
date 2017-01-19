@@ -97,3 +97,7 @@ share
 
 #misc
 *.sqlite
+
+# media stuff
+imagersite/MEDIA/*
+!imagersite/MEDIA/.gitkeep

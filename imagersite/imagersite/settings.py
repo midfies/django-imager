@@ -142,3 +142,6 @@ DEFAULT_FROM_EMAIL = 'anotherimagersite@gmail.com'
 
 # if DEBUG:
 #     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'MEDIA')
+MEDIA_URL = "/media/"
