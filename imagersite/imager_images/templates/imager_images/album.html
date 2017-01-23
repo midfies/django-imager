@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load thumbnail %}
+
+{% block title %}{{profile.user}}'s Library{% endblock %}
+
+
+{% block body %}
+<ul>
+    {% if user.is_authenticated %}
+        <h1>{{ user.first_name }}'s Albums</h1>
+        {% for photo in photos %}
+            <li><img src="{{ photo.photo.url }}" height = 100, width= 100/></li>
+        {% endfor %}
+    {% endif %}
+</ul>
+{% endblock %}

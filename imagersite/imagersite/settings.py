@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'imager_profile',
     'imager_images',
     'imagersite',
+    'sorl.thumbnail',
 
 ]
 
@@ -71,6 +72,7 @@ TEMPLATES = [
     },
 ]
 
+TEMPLATE_DEBUG = True   
 WSGI_APPLICATION = 'imagersite.wsgi.application'
 
 
