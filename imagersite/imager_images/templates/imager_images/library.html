@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load thumbnail %}
+
+{% block title %}{{profile.user}}'s Library{% endblock %}
+
+
+{% block body %}
+<ul>
+    {% if user.is_authenticated %}
+        <h1>{{ user.first_name }}'s Albums</h1>
+        {% for album in albums %}
+            {% if album.cover_photo %}
+                <a href="{% url 'album' album.id %}"><li><img src="{{ album.cover_photo.url }}" height = 100, width= 100/></li></a>
+            {% else %}
+                <a href="{% url 'album' album.id %}"><li><img src="{% static 'generic.jpg' %}"height = 100, width= 100/></li></a>
+            {% endif %}
+        {% endfor %}
+        <hr><hr><hr><hr><hr>
+        <h1>{{ user.first_name }}'s Photos</h1>
+        <hr><hr><hr><hr><hr>
+        {% for photo in photos %}
+            <li><img src="{{ photo.photo.url }}" height = 100, width= 100/></li>
+        {% endfor %}
+    {% endif %}
+</ul>
+{% endblock %}
+
+    {% if True %}
+    {% thumbnail album.cover_photo.url "100x100" crop="center" as im %}
+        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+    {% endthumbnail %}
+    {% else %}
+        {% with STATIC_URL|add:"/generic.jpg" as path %}
+        {% thumbnail path "100x100" crop="center" as im %}
+        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+    {% endthumbnail %}
+    {% endwith %}
+    {%endif%}

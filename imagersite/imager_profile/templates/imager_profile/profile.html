@@ -1,12 +1,23 @@
 {% extends 'base.html' %}
+<<<<<<< HEAD
 
-{% block title %}Register{% endblock %}
-{# {% block css %}<link href="{% static 'bootstrap/examples/cover/cover.css' %}" rel="stylesheet">{% endblock %} #}
+{% block title %}{{profile.user}}'s Profile{% endblock %}
+
 
 {% block body %}
 <ul>
-    {% for photo in photos %}
-    <li><img src="{{ photo.photo.url }}" /></li>
-    {% endfor %}
+    {% if user.is_authenticated %}
+        <h1>{{ userdata.first_name }}'s Profile</h1>
+        <p>Bio: {{profile.bio}}</p>
+        <p>Website: {{profile.website}}</p>
+        <p>Phone: {{profile.phone}}</p>
+        {% if user.username == userdata.username %}
+            <p>address: {{profile.address}}</p>
+            <p>Camera Type: {{profile.camera_type}}</p>
+            <p>Travel Radius: {{profile.phone}}</p>
+        {% endif %}
+        <a href="{% url 'library' %}"><h2>To the library!</h2></a>
+        
+    {% endif %}
 </ul>
 {% endblock %}
