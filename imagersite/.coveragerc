@@ -2,8 +2,9 @@
 source =
     imagersite
     imager_profile
+    imager_images
 
-omit = 
+omit =
     */migrations/*
     */tests.py
     manage.py
