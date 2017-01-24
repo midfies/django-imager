@@ -1,27 +1,48 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load thumbnail %}
+{% block css %}<link href="{% static 'style.css' %}" rel="stylesheet">{% endblock %}
 
 {% block title %}{{profile.user}}'s Library{% endblock %}
 
 
 {% block body %}
-<ul>
+<div class="container">    
+  <div class="row">
     {% if user.is_authenticated %}
         <h1>{{ user.username }}'s Albums</h1>
         {% for album in albums %}
+        <div class="col-sm-4"> 
+              <div class="panel panel-success">
+                <div class="panel-heading">{{album.title}}</div>
+                <div class="panel-body crop"><a href="{% url 'album' album.id %}">
             {% if album.cover_photo %}
                 <a href="{% url 'album' album.id %}"><li><img src="{{ album.cover_photo.photo.url }}" height = 100, width= 100/></li></a>
             {% else %}
                 <a href="{% url 'album' album.id %}"><li><img src="{% static 'generic.jpg' %}"height = 100, width= 100/></li></a>
             {% endif %}
+            </div>
+                <div class="panel-footer">{{album.description}}</div>
+              </div>
+            </div>
         {% endfor %}
-        <hr><hr><hr><hr><hr>
+        </div>
+    </div><br>
+        <hr>
+        <div class="container">    
+        <div class="row">
         <h1>{{ user.username }}'s Photos</h1>
-        <hr><hr><hr><hr><hr>
         {% for photo in photos %}
-            <li><img src="{{ photo.photo.url }}" height = 100, width= 100/></li>
+            <div class="col-sm-4"> 
+              <div class="panel panel-success">
+                <div class="panel-heading">{{photo.title}}</div>
+                <div class="panel-body crop"><a href="{% url 'photo' photo.id %}"><img src="{{ photo.photo.url }}" height = 100, width= 100/></div>
+                <div class="panel-footer">{{photo.description}}</div>
+              </div>
+            </div>
         {% endfor %}
+        </div>
+</div><br>
     {% endif %}
 </ul>
 {% endblock %}
