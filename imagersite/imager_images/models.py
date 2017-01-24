@@ -21,7 +21,6 @@ class Photo(models.Model):
     owner = models.ForeignKey(
         ImagerProfile,
         related_name='photos',
-        on_delete=models.CASCADE,
         blank=True,
         null=True
     )
@@ -57,6 +56,12 @@ class Album(models.Model):
     objects = models.Manager()
     public = PublicAlbumManger()
 
+    cover_photo = models.ForeignKey(Photo,
+                                    blank=True,
+                                    null=True,
+                                    related_name="+",
+                                    db_column='cover_photo')
+
     owner = models.ForeignKey(
         ImagerProfile,
         related_name='albums',
@@ -84,4 +89,3 @@ class Album(models.Model):
     published = models.CharField(max_length=144,
                                  choices=PUBLISH_CHOICES,
                                  default='PRIVATE')
-    cover_photo = models.ForeignKey(Photo, blank=True, null=True, related_name="+")
