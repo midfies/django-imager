@@ -17,7 +17,9 @@ class ActiveUsersManger(models.Manager):
 class ImagerProfile(models.Model):
     """The library Patro and all of its attributes."""
 
+    objects = models.Manager()
     active = ActiveUsersManger()
+
     user = models.OneToOneField(
         User,
         related_name='profile',
@@ -48,9 +50,6 @@ class ImagerProfile(models.Model):
     type_of_photography = models.CharField(max_length=144,
                                            choices=PHOTOGRAPHY_CHOICES,
                                            null=True)
-
-    objects = models.Manager()
-    active = ActiveUsersManger()
 
     @property
     def is_active(self):
