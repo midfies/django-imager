@@ -62,7 +62,15 @@ class Album(models.Model):
         related_name='albums',
         on_delete=models.CASCADE,
         blank=True,
-        null=True
+        null=True,
+    )
+
+    cover_photo = models.ForeignKey(
+        Photo,
+        blank=True,
+        null=True,
+        related_name="+",
+        db_column='cover_photo'
     )
 
     photos = models.ManyToManyField(
@@ -84,4 +92,3 @@ class Album(models.Model):
     published = models.CharField(max_length=144,
                                  choices=PUBLISH_CHOICES,
                                  default='PRIVATE')
-    cover_photo = models.ForeignKey(Photo, blank=True, null=True, related_name="+")
