@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-<<<<<<< HEAD
 
 {% block title %}{{profile.user}}'s Profile{% endblock %}
 
@@ -15,8 +14,8 @@
             <p>address: {{profile.address}}</p>
             <p>Camera Type: {{profile.camera_type}}</p>
             <p>Travel Radius: {{profile.phone}}</p>
-        {% endif %}
         <a href="{% url 'library' %}"><h2>To the library!</h2></a>
+        {% endif %}
         
     {% endif %}
 </ul>

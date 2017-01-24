@@ -29,3 +29,16 @@ def photo_view(request, photoid):
     """."""
     photo = Photo.public.filter(id=photoid).first()
     return render(request, 'imager_images/photo.html', {'photo': photo})
+
+
+def photo_gallery_view(request):
+    """."""
+    photos = Photo.public.all()
+    return render(request, 'imager_images/photo_gallery.html', {'photos': photos})
+
+
+def album_gallery_view(request):
+    """."""
+    albums = Album.public.all()
+
+    return render(request, 'imager_images/album_gallery.html', {'albums': albums})
