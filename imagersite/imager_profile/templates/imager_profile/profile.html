@@ -7,7 +7,7 @@
 {% block body %}
 <ul>
     {% if user.is_authenticated %}
-        <h1>{{ userdata.first_name }}'s Profile</h1>
+        <h1>{{ userdata.username }}'s profile</h1>
         <p>Bio: {{profile.bio}}</p>
         <p>Website: {{profile.website}}</p>
         <p>Phone: {{profile.phone}}</p>

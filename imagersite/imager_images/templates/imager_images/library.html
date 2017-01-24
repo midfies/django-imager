@@ -8,16 +8,16 @@
 {% block body %}
 <ul>
     {% if user.is_authenticated %}
-        <h1>{{ user.first_name }}'s Albums</h1>
+        <h1>{{ user.username }}'s Albums</h1>
         {% for album in albums %}
             {% if album.cover_photo %}
-                <a href="{% url 'album' album.id %}"><li><img src="{{ album.cover_photo.url }}" height = 100, width= 100/></li></a>
+                <a href="{% url 'album' album.id %}"><li><img src="{{ album.cover_photo.photo.url }}" height = 100, width= 100/></li></a>
             {% else %}
                 <a href="{% url 'album' album.id %}"><li><img src="{% static 'generic.jpg' %}"height = 100, width= 100/></li></a>
             {% endif %}
         {% endfor %}
         <hr><hr><hr><hr><hr>
-        <h1>{{ user.first_name }}'s Photos</h1>
+        <h1>{{ user.username }}'s Photos</h1>
         <hr><hr><hr><hr><hr>
         {% for photo in photos %}
             <li><img src="{{ photo.photo.url }}" height = 100, width= 100/></li>
