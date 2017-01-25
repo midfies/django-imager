@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}{{profile.user}}'s Profile{% endblock %}
+{% block title %}{{profile.user.username}}'s Profile{% endblock %}
 
 
 {% block body %}
 <ul>
     {% if user.is_authenticated %}
-        <h1>{{ userdata.username }}'s profile</h1>
+        <h1>{{ user.username }}'s profile</h1>
         <p>Bio: {{profile.bio}}</p>
         <p>Website: {{profile.website}}</p>
         <p>Phone: {{profile.phone}}</p>
-        {% if user.username == userdata.username %}
+        {% if user.username == profile.user.username %}
             <p>address: {{profile.address}}</p>
             <p>Camera Type: {{profile.camera_type}}</p>
             <p>Travel Radius: {{profile.phone}}</p>

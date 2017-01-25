@@ -24,21 +24,17 @@ class LibraryView(ListView):
         return {}
 
 
-class AlbumView(TemplateView):
+class AlbumView(ListView):
     """"AlbumView."""
 
     template_name = 'imager_images/album.html'
     model = Album
 
-    def get_context_data(self, albumid):
+    def get_context_data(self):
         """Get albums and photos and return them."""
-        album = Album.public.get(id=albumid)
+        album = Album.public.get(id=self.kwargs['albumid'])
         photos = album.photos.all()
         return {'album': album, 'photos': photos}
-
-    def get_queryset(self):
-        """Redefining because I have to."""
-        return {}
 
 
 class AlbumGalleryView(ListView):

@@ -8,12 +8,12 @@ class ProfileView(TemplateView):
     """"ProfileView."""
 
     template_name = 'imager_profile/profile.html'
+    model = ImagerProfile
 
-    def get_context_data(self, username):
-        """Get albums and photos and return them."""
-        if username == "USER":
-            username = self.request.user.username
-        profile = ImagerProfile.active.get(user__username=username)
-        user = User.objects.filter(username=username).first()
-        photos = profile.photos.all()
-        return {'photos': photos, 'profile': profile, 'userdata': user}
+    def get_context_data(self, **kwargs):
+        """Get profile information and return it."""
+        context = super(ProfileView, self).get_context_data(**kwargs)
+        profile = ImagerProfile.active.get(user__username=self.kwargs['username'])
+        context['profile'] = profile
+        context['userdata'] = User.objects.filter(username=self.kwargs['username']).first()
+        return context
