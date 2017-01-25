@@ -7,7 +7,7 @@
 
 
 {% block body %}
-<div class="container">    
+<div class="container">
   <div class="row">
     {% if user.is_authenticated %}
         <h1>{{ user.username }}'s Albums</h1>
@@ -29,7 +29,7 @@
         </div>
     </div><br>
         <hr>
-        <div class="container">    
+        <div class="container">
         <div class="row">
         <h1>{{ user.username }}'s Photos</h1>
         {% for photo in photos %}
