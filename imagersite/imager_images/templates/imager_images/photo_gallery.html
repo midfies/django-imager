@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load thumbnail %}
+{% block css %}<link href="{% static 'style.css' %}" rel="stylesheet">{% endblock %}
+
+{% block title %}Public Photo Gallery{% endblock %}
+
+
+{% block body %}
+<div class="container">    
+  <div class="row">
+        {% for photo in photos %}
+            <div class="col-sm-4"> 
+              <div class="panel panel-success">
+                <div class="panel-heading">{{photo.title}}</div>
+                <div class="panel-body crop"><a href="{% url 'photo' photo.id %}"><img src="{{ photo.photo.url }}"/></a></div>
+                <div class="panel-footer">{{photo.description}}</div>
+              </div>
+            </div>
+        {% endfor %}
+</div>
+</div><br>
+{% endblock %}
