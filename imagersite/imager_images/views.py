@@ -1,44 +1,71 @@
-from django.shortcuts import render
-from django.http import Http404
+"""Views for albums and photos."""
 from imager_profile.models import ImagerProfile
 from imager_images.models import Album, Photo
+from django.views.generic import ListView, TemplateView
 
 # Create your views here.
 
 
-def library_view(request):
-    """."""
-    try:
-        profile = ImagerProfile.active.get(user__username=request.user.username)
+class LibraryView(ListView):
+    """"LibraryView."""
+
+    template_name = 'imager_images/library.html'
+
+    def get_context_data(self):
+        """Get albums and photos and return them."""
+        profile = ImagerProfile.active.get(user__username=self.request.user.username)
         photos = profile.photos.all()
         albums = profile.albums.all()
-        username = request.user.username
-        return render(request, 'imager_images/library.html', {'photos': photos, 'profile': profile, 'albums': albums, 'username': username})
-    except ImagerProfile.DoesNotExist:
-        raise Http404("No MyModel matches the given query.")
+        username = self.request.user.username
+        return {'photos': photos, 'profile': profile, 'albums': albums, 'username': username}
+
+    def get_queryset(self):
+        """Redefining because I have to."""
+        return {}
 
 
-def album_view(request, albumid):
-    """."""
-    album = Album.public.get(id=albumid)
-    photos = album.photos.all()
-    return render(request, 'imager_images/album.html', {'album': album, 'photos': photos})
+class AlbumView(TemplateView):
+    """"AlbumView."""
+
+    template_name = 'imager_images/album.html'
+    model = Album
+
+    def get_context_data(self, albumid):
+        """Get albums and photos and return them."""
+        album = Album.public.get(id=albumid)
+        photos = album.photos.all()
+        return {'album': album, 'photos': photos}
+
+    def get_queryset(self):
+        """Redefining because I have to."""
+        return {}
 
 
-def photo_view(request, photoid):
-    """."""
-    photo = Photo.public.filter(id=photoid).first()
-    return render(request, 'imager_images/photo.html', {'photo': photo})
+class AlbumGalleryView(ListView):
+    """"AlbumGalleryView."""
+
+    template_name = 'imager_images/album_gallery.html'
+
+    def get_context_data(self):
+        """Get all public albums return them."""
+        albums = Album.public.all()
+        return {'albums': albums}
+
+    def get_queryset(self):
+        """Redefining because I have to."""
+        return {}
 
 
-def photo_gallery_view(request):
-    """."""
-    photos = Photo.public.all()
-    return render(request, 'imager_images/photo_gallery.html', {'photos': photos})
+class PhotoGalleryView(ListView):
+    """"PhotoGalleryView."""
 
+    template_name = 'imager_images/photo_gallery.html'
 
-def album_gallery_view(request):
-    """."""
-    albums = Album.public.all()
+    def get_context_data(self):
+        """Get all public photos and return them."""
+        photos = Photo.public.all()
+        return {'photos': photos}
 
-    return render(request, 'imager_images/album_gallery.html', {'albums': albums})
+    def get_queryset(self):
+        """Redefining because I have to."""
+        return {}
