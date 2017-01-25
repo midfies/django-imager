@@ -78,21 +78,16 @@ class PhotoGalleryView(ListView):
 
 class AddAlbumView(CreateView):
     """Add a new album."""
+
     login_required = True
     success_url = reverse_lazy('library')
     template_name = 'imager_images/add_album.html'
     model = Album
-    fields = [
-        'title',
-        'description',
-        'published',
-        'cover_photo',
-        'photos'
-    ]
+    form_class = AddAlbumForm
 
     def form_valid(self, form):
+        """If form post is successful, set the object's owner."""
         self.object = form.save()
-        import pdb; pdb.set_trace()
         self.object.owner = self.request.user.profile
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
@@ -100,18 +95,15 @@ class AddAlbumView(CreateView):
 
 class AddPhotoView(CreateView):
     """Add a new photo."""
+
     login_required = True
     success_url = reverse_lazy('library')
     template_name = 'imager_images/add_photo.html'
     model = Photo
-    fields = [
-        'title',
-        'description',
-        'published',
-        'photo'
-    ]
+    form_class = AddPhotoForm
 
     def form_valid(self, form):
+        """If form post is successful, set the object's owner."""
         self.object = form.save()
         self.object.owner = self.request.user.profile
         self.object.save()
