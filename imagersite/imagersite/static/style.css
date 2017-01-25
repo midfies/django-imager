@@ -9,3 +9,15 @@
  width: 300px;
 
 }
+
+.crop_main {
+ width: 100%;
+ overflow: hidden;
+ margin: 0 auto;
+}
+.crop_main img {
+ height: auto;
+ width: 75%;
+
+}
+

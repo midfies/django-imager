@@ -2,15 +2,18 @@
 
 {% block title %}Register{% endblock %}
 {% load static %}
-{% block css %}<link href="{% static 'bootstrap/examples/cover/cover.css' %}" rel="stylesheet">{% endblock %}
+{% block css %}
+<link href="{% static 'bootstrap/examples/cover/cover.css' %}" rel="stylesheet">
+<link href="{% static 'style.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block body %}
     <div class="jumbotron">
-      <div class="container">
+      <div class="container crop_main">
         <h1>jaims!</h1>
         <p>Just another imager site.</p>
         <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
-        <li><img src="{{ random_photo.photo.url }}" /></li>
+        <img src="{{ random_photo.photo.url }}"/>
       </div>
     </div>
 {% endblock %}
