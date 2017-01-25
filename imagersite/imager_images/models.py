@@ -41,6 +41,10 @@ class Photo(models.Model):
                                  default='PRIVATE')
     photo = models.ImageField(upload_to='', blank=True, null=True)
 
+    def __str__(self):
+        """Return readable repr."""
+        return self.title
+
 
 class PublicAlbumManger(models.Manager):
     """Active user manager."""
@@ -97,3 +101,7 @@ class Album(models.Model):
     published = models.CharField(max_length=144,
                                  choices=PUBLISH_CHOICES,
                                  default='PRIVATE')
+
+    def __str__(self):
+        """Return readable repr."""
+        return self.title

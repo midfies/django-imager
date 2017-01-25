@@ -6,11 +6,9 @@ from django.views.generic import DetailView, TemplateView
 
 class ProfileView(DetailView):
     """"ProfileView."""
-
     template_name = 'imager_profile/profile.html'
     model = ImagerProfile
     slug_field = 'user__username'
-
     def get_context_data(self, **kwargs):
         """Get profile information and return it."""
 
