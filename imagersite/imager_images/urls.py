@@ -1,7 +1,14 @@
 """Routes for albums and photos."""
 from django.conf.urls import url
 from imager_images.models import Photo
-from imager_images.views import AlbumView, AlbumGalleryView, PhotoGalleryView, LibraryView
+from imager_images.views import (
+    AlbumView,
+    AlbumGalleryView,
+    PhotoGalleryView,
+    LibraryView,
+    AddAlbumView,
+    AddPhotoView
+)
 from django.views.generic import DetailView
 
 urlpatterns = [
@@ -13,4 +20,6 @@ urlpatterns = [
         template_name="imager_images/photo.html",
         model=Photo
     ), name='photo'),
+    url(r'albums/add/$', AddAlbumView.as_view(), name='add_album'),
+    url(r'photos/add/$', AddPhotoView.as_view(), name='add_photo'),
 ]
