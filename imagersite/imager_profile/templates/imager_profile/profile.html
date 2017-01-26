@@ -11,12 +11,14 @@
         <p>Website: {{profile.website}}</p>
         <p>Phone: {{profile.phone}}</p>
         {% if user.username == profile.user.username %}
-            <p>address: {{profile.address}}</p>
+            <p>Name: {{profile.user.first_name}} {{profile.user.last_name}}</p>
+            <p>Email: {{profile.user.email}}</p>
+            <p>Address: {{profile.address}}</p>
             <p>Camera Type: {{profile.camera_type}}</p>
-            <p>Travel Radius: {{profile.phone}}</p>
+            <p>Travel Radius: {{profile.travel_radius}}</p>
         <a href="{% url 'library' %}"><h2>To the library!</h2></a>
+        <a href="{% url 'edit_profile' %}"><h2>Edit Profile</h2></a>
         {% endif %}
-        
     {% endif %}
 </ul>
 {% endblock %}

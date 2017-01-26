@@ -1,52 +1,52 @@
-from django.test import TestCase, Client, RequestFactory
-from django.contrib.auth.models import User
-from imager_profile.models import ImagerProfile
-from imager_images.models import Photo, Album
-from imager_profile.tests import UserFactory
-import factory
-from faker import Faker
-from bs4 import BeautifulSoup
+# from django.test import TestCase, Client, RequestFactory
+# from django.contrib.auth.models import User
+# from imager_profile.models import ImagerProfile
+# from imager_images.models import Photo, Album
+# from imager_profile.tests import UserFactory
+# import factory
+# from faker import Faker
+# from bs4 import BeautifulSoup
 
-faker = Faker()
-billy = UserFactory.create(username='billythehuman').profile
-billy.save()
-
-
-class PhotoFactory(factory.django.DjangoModelFactory):
-        """User factory for testing."""
-
-        class Meta:
-            """Model meta."""
-
-            model = Photo
-
-        owner = billy
-        title = factory.Sequence(lambda n: "photo{}".format(n))
+# faker = Faker()
+# billy = UserFactory.create(username='billythehuman').profile
+# billy.save()
 
 
-class AlbumFactory(factory.django.DjangoModelFactory):
-        """User factory for testing."""
+# class PhotoFactory(factory.django.DjangoModelFactory):
+#         """User factory for testing."""
 
-        class Meta:
-            """Model meta."""
+#         class Meta:
+#             """Model meta."""
 
-            model = Album
+#             model = Photo
 
-        title = factory.Sequence(lambda n: "album{}".format(n))
+#         owner = billy
+#         title = factory.Sequence(lambda n: "photo{}".format(n))
 
 
-class PhotoAlbumBackendTests(TestCase):
-    """The Profile Model test runner for db stuff."""
+# class AlbumFactory(factory.django.DjangoModelFactory):
+#         """User factory for testing."""
 
-    def setUp(self):
-        """The appropriate setup for the appropriate test."""
-        self.photos = [PhotoFactory.create() for i in range(20)]
+#         class Meta:
+#             """Model meta."""
 
-    def test_can_add_photos_to_album(self):
-        """Photos can be associated with albums."""
-        photo = self.photos[0]
-        album = AlbumFactory()
-        album.owner = photo.owner
-        album.photos.add(photo)
-        album.save()
-        self.assertTrue(album.photos.first() is photo)
+#             model = Album
+
+#         title = factory.Sequence(lambda n: "album{}".format(n))
+
+
+# class PhotoAlbumBackendTests(TestCase):
+#     """The Profile Model test runner for db stuff."""
+
+#     def setUp(self):
+#         """The appropriate setup for the appropriate test."""
+#         self.photos = [PhotoFactory.create() for i in range(20)]
+
+#     def test_can_add_photos_to_album(self):
+#         """Photos can be associated with albums."""
+#         photo = self.photos[0]
+#         album = AlbumFactory()
+#         album.owner = photo.owner
+#         album.photos.add(photo)
+#         album.save()
+#         self.assertTrue(album.photos.first() is photo)
