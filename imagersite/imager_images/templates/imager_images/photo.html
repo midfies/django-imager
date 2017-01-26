@@ -2,15 +2,12 @@
 {% load static %}
 {% load thumbnail %}
 
-{% block title %}{{user.first_name}}'s Photo {{photo.title}}{% endblock %}
+{% block title %}{{photo.owner.user.username}}'s Photo {{photo.title}}{% endblock %}
 
 
 {% block body %}
 <ul>
-    {% if user.is_authenticated %}
-        <h1>{{user.first_name}}'s Photo {{photo.title}}</h1>
+        <h1>{{photo.owner.user.username}}'s Photo {{photo.title}}</h1>
         <img src="{{ photo.photo.url }}"/>
-        
-    {% endif %}
 </ul>
 {% endblock %}

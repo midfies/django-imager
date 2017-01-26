@@ -3,14 +3,13 @@
 {% load thumbnail %}
 {% block css %}<link href="{% static 'style.css' %}" rel="stylesheet">{% endblock %}
 
-{% block title %}{{profile.user}}'s Library{% endblock %}
+{% block title %}{{album.owner.user.username}}'s Library{% endblock %}
 
 
 {% block body %}
 <div class="container">    
   <div class="row">
-    {% if user.is_authenticated %}
-        <h1>{{ user.first_name }}'s Albums</h1>
+        <h1>{{ album.owner.user.username }}'s Albums</h1>
         {% for photo in photos %}
             <div class="col-sm-4"> 
               <div class="panel panel-success">
@@ -20,7 +19,6 @@
               </div>
             </div>
         {% endfor %}
-    {% endif %}
   </div>
 </div><br>
 {% endblock %}

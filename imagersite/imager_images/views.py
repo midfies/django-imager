@@ -1,9 +1,10 @@
 """Views for albums and photos."""
 from django.views.generic.edit import CreateView
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.http import HttpResponseForbidden
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from imager_profile.models import ImagerProfile
 from imager_images.models import Album, Photo
@@ -76,8 +77,9 @@ class PhotoGalleryView(ListView):
         return {}
 
 
-class AddAlbumView(CreateView):
+class AddAlbumView(LoginRequiredMixin, CreateView):
     """Add a new album."""
+
     login_required = True
     success_url = reverse_lazy('library')
     template_name = 'imager_images/add_album.html'
@@ -92,7 +94,28 @@ class AddAlbumView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        import pdb; pdb.set_trace()
+        self.object.owner = self.request.user.profile
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class EditAlbumView(CreateView):
+    """Edit an album."""
+
+    login_required = True
+    success_url = reverse_lazy('library')
+    template_name = 'imager_images/add_album.html'
+    model = Album
+    fields = [
+        'title',
+        'description',
+        'published',
+        'cover_photo',
+        'photos'
+    ]
+
+    def form_valid(self, form):
+        self.object = form.save()
         self.object.owner = self.request.user.profile
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
