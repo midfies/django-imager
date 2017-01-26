@@ -8,6 +8,7 @@
 {% block body %}
 <ul>
         <h1>{{photo.owner.user.username}}'s Photo {{photo.title}}</h1>
-        <img src="{{ photo.photo.url }}"/>
+        <a href="{% url 'edit_photo' photo.id %}"><button class="btn btn-lg btn-primary btn-block">Edit</button></a>
+        <img src="{{ photo.photo.url }}" class="crop_main"/>
 </ul>
 {% endblock %}

@@ -1,5 +1,5 @@
 """Views for albums and photos."""
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from imager_profile.models import ImagerProfile
 from imager_images.models import Album, Photo
-from imager_images.forms import AddAlbumForm, AddPhotoForm
+from imager_images.forms import AddAlbumForm, AddPhotoForm, EditPhotoForm, EditAlbumForm
 
 # Create your views here.
 
@@ -77,65 +77,56 @@ class PhotoGalleryView(ListView):
         return {}
 
 
-class AddAlbumView(LoginRequiredMixin, CreateView):
+class AddAlbumView(CreateView):
     """Add a new album."""
 
     login_required = True
     success_url = reverse_lazy('library')
     template_name = 'imager_images/add_album.html'
     model = Album
-    fields = [
-        'title',
-        'description',
-        'published',
-        'cover_photo',
-        'photos'
-    ]
+    form_class = AddAlbumForm
 
     def form_valid(self, form):
+        """If form post is successful, set the object's owner."""
         self.object = form.save()
         self.object.owner = self.request.user.profile
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
 
-class EditAlbumView(CreateView):
+class EditAlbumView(LoginRequiredMixin, UpdateView):
     """Edit an album."""
 
     login_required = True
     success_url = reverse_lazy('library')
-    template_name = 'imager_images/add_album.html'
+    template_name = 'imager_images/edit_album.html'
     model = Album
-    fields = [
-        'title',
-        'description',
-        'published',
-        'cover_photo',
-        'photos'
-    ]
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.owner = self.request.user.profile
-        self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
+    form_class = EditAlbumForm
 
 
-class AddPhotoView(CreateView):
+class AddPhotoView(LoginRequiredMixin, CreateView):
     """Add a new photo."""
+
     login_required = True
     success_url = reverse_lazy('library')
     template_name = 'imager_images/add_photo.html'
     model = Photo
-    fields = [
-        'title',
-        'description',
-        'published',
-        'photo'
-    ]
+    form_class = AddPhotoForm
 
     def form_valid(self, form):
+        """If form post is successful, set the object's owner."""
         self.object = form.save()
         self.object.owner = self.request.user.profile
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
+
+class EditPhotoView(LoginRequiredMixin, UpdateView):
+    """Edit a photo."""
+
+    login_required = True
+    success_url = reverse_lazy('library')
+    template_name = 'imager_images/edit_photo.html'
+    model = Photo
+    form_class = EditPhotoForm
+    form_class.Meta.exclude.append('photo')

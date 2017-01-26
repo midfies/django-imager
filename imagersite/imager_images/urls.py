@@ -7,7 +7,9 @@ from imager_images.views import (
     PhotoGalleryView,
     LibraryView,
     AddAlbumView,
-    AddPhotoView
+    AddPhotoView,
+    EditAlbumView,
+    EditPhotoView,
 )
 from django.views.generic import DetailView
 
@@ -22,4 +24,6 @@ urlpatterns = [
     ), name='photo'),
     url(r'albums/add/$', AddAlbumView.as_view(), name='add_album'),
     url(r'photos/add/$', AddPhotoView.as_view(), name='add_photo'),
+    url(r'albums/(?P<pk>\d+)/edit/$', EditAlbumView.as_view(), name='edit_album'),
+    url(r'photos/(?P<pk>\d+)/edit$', EditPhotoView.as_view(), name='edit_photo'),
 ]

@@ -32,7 +32,7 @@ class Photo(models.Model):
     )
 
     title = models.CharField(max_length=128)
-    description = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(max_length=255, blank=True, null=True)
     date_uploaded = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     date_published = models.DateTimeField(blank=True, null=True)
@@ -94,7 +94,7 @@ class Album(models.Model):
     )
 
     title = models.CharField(max_length=128)
-    description = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(max_length=255, blank=True, null=True)
     date_uploaded = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     date_published = models.DateTimeField(blank=True, null=True)
