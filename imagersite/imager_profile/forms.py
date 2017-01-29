@@ -12,6 +12,8 @@ class EditProfileForm(forms.ModelForm):
         self.fields["Last Name"] = forms.CharField(initial=self.instance.user.last_name)
         self.fields["Email"] = forms.EmailField(initial=self.instance.user.email)
         del self.fields["user"]
+        for field in self.fields:
+            self.fields[field].required = False
 
     class Meta:
 

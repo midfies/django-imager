@@ -2,6 +2,7 @@
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.http import HttpResponseForbidden
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -40,11 +41,11 @@ class AlbumView(ListView):
     def get_context_data(self):
         """Get albums and photos and return them."""
         album = Album.objects.get(id=self.kwargs['albumid'])
-        if album.published == 'PUBLIC' or album.owner == self.request.user.profile:
+        if album.published == 'PUBLIC' or album.owner.user == self.request.user:
             photos = album.photos.all()
             return {'album': album, 'photos': photos}
         else:
-            return HttpResponseForbidden()
+            redirect(HttpResponseForbidden())
 
 
 class AlbumGalleryView(ListView):
@@ -77,7 +78,7 @@ class PhotoGalleryView(ListView):
         return {}
 
 
-class AddAlbumView(CreateView):
+class AddAlbumView(LoginRequiredMixin, CreateView):
     """Add a new album."""
 
     login_required = True
@@ -102,6 +103,10 @@ class EditAlbumView(LoginRequiredMixin, UpdateView):
     template_name = 'imager_images/edit_album.html'
     model = Album
     form_class = EditAlbumForm
+
+    def get_queryset(self):
+        base_qs = super(EditAlbumView, self).get_queryset()
+        return base_qs.filter(owner=self.request.user.profile)
 
 
 class AddPhotoView(LoginRequiredMixin, CreateView):
@@ -130,3 +135,7 @@ class EditPhotoView(LoginRequiredMixin, UpdateView):
     model = Photo
     form_class = EditPhotoForm
     form_class.Meta.exclude.append('photo')
+
+    def get_queryset(self):
+        base_qs = super(EditPhotoView, self).get_queryset()
+        return base_qs.filter(owner=self.request.user.profile)
