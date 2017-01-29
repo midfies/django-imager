@@ -87,6 +87,13 @@ class AddAlbumView(LoginRequiredMixin, CreateView):
     model = Album
     form_class = AddAlbumForm
 
+    def get_form(self):
+        """Retrieve form and customize some fields."""
+        form = super(AddAlbumView, self).get_form()
+        form.fields['cover_photo'].queryset = self.request.user.profile.photos.all()
+        form.fields['photos'].queryset = self.request.user.profile.photos.all()
+        return form
+
     def form_valid(self, form):
         """If form post is successful, set the object's owner."""
         self.object = form.save()
@@ -104,9 +111,26 @@ class EditAlbumView(LoginRequiredMixin, UpdateView):
     model = Album
     form_class = EditAlbumForm
 
-    def get_queryset(self):
-        base_qs = super(EditAlbumView, self).get_queryset()
-        return base_qs.filter(owner=self.request.user.profile)
+    def get_form(self):
+        """Retrieve form and customize some fields."""
+        form = super(EditAlbumView, self).get_form()
+        form.fields['cover_photo'].queryset = self.request.user.profile.photos.all()
+        form.fields['photos'].queryset = self.request.user.profile.photos.all()
+        return form
+
+    def user_is_user(self, request):
+        """Test if album's owner is current user."""
+        if request.user.is_authenticated():
+            self.object = self.get_object()
+            return self.object.owner.user == request.user
+        return False
+
+    def dispatch(self, request, *args, **kwargs):
+        """If user owns album let them do stuff."""
+        if not self.user_is_user(request):
+            return HttpResponseForbidden()
+        return super(EditAlbumView, self).dispatch(
+            request, *args, **kwargs)
 
 
 class AddPhotoView(LoginRequiredMixin, CreateView):
@@ -136,6 +160,16 @@ class EditPhotoView(LoginRequiredMixin, UpdateView):
     form_class = EditPhotoForm
     form_class.Meta.exclude.append('photo')
 
-    def get_queryset(self):
-        base_qs = super(EditPhotoView, self).get_queryset()
-        return base_qs.filter(owner=self.request.user.profile)
+    def user_is_user(self, request):
+        """Test if album's owner is current user."""
+        if request.user.is_authenticated():
+            self.object = self.get_object()
+            return self.object.owner.user == request.user
+        return False
+
+    def dispatch(self, request, *args, **kwargs):
+        """If user doesn't own album, raise 403, else continue."""
+        if not self.user_is_user(request):
+            return HttpResponseForbidden()
+        return super(EditPhotoView, self).dispatch(
+            request, *args, **kwargs)
