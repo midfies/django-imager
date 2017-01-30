@@ -2,6 +2,7 @@
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.http import HttpResponseForbidden
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -40,11 +41,11 @@ class AlbumView(ListView):
     def get_context_data(self):
         """Get albums and photos and return them."""
         album = Album.objects.get(id=self.kwargs['albumid'])
-        if album.published == 'PUBLIC' or album.owner == self.request.user.profile:
+        if album.published == 'PUBLIC' or album.owner.user == self.request.user:
             photos = album.photos.all()
             return {'album': album, 'photos': photos}
         else:
-            return HttpResponseForbidden()
+            redirect(HttpResponseForbidden())
 
 
 class AlbumGalleryView(ListView):
@@ -77,7 +78,7 @@ class PhotoGalleryView(ListView):
         return {}
 
 
-class AddAlbumView(CreateView):
+class AddAlbumView(LoginRequiredMixin, CreateView):
     """Add a new album."""
 
     login_required = True
@@ -85,6 +86,13 @@ class AddAlbumView(CreateView):
     template_name = 'imager_images/add_album.html'
     model = Album
     form_class = AddAlbumForm
+
+    def get_form(self):
+        """Retrieve form and customize some fields."""
+        form = super(AddAlbumView, self).get_form()
+        form.fields['cover_photo'].queryset = self.request.user.profile.photos.all()
+        form.fields['photos'].queryset = self.request.user.profile.photos.all()
+        return form
 
     def form_valid(self, form):
         """If form post is successful, set the object's owner."""
@@ -102,6 +110,27 @@ class EditAlbumView(LoginRequiredMixin, UpdateView):
     template_name = 'imager_images/edit_album.html'
     model = Album
     form_class = EditAlbumForm
+
+    def get_form(self):
+        """Retrieve form and customize some fields."""
+        form = super(EditAlbumView, self).get_form()
+        form.fields['cover_photo'].queryset = self.request.user.profile.photos.all()
+        form.fields['photos'].queryset = self.request.user.profile.photos.all()
+        return form
+
+    def user_is_user(self, request):
+        """Test if album's owner is current user."""
+        if request.user.is_authenticated():
+            self.object = self.get_object()
+            return self.object.owner.user == request.user
+        return False
+
+    def dispatch(self, request, *args, **kwargs):
+        """If user owns album let them do stuff."""
+        if not self.user_is_user(request):
+            return HttpResponseForbidden()
+        return super(EditAlbumView, self).dispatch(
+            request, *args, **kwargs)
 
 
 class AddPhotoView(LoginRequiredMixin, CreateView):
@@ -130,3 +159,17 @@ class EditPhotoView(LoginRequiredMixin, UpdateView):
     model = Photo
     form_class = EditPhotoForm
     form_class.Meta.exclude.append('photo')
+
+    def user_is_user(self, request):
+        """Test if album's owner is current user."""
+        if request.user.is_authenticated():
+            self.object = self.get_object()
+            return self.object.owner.user == request.user
+        return False
+
+    def dispatch(self, request, *args, **kwargs):
+        """If user doesn't own album, raise 403, else continue."""
+        if not self.user_is_user(request):
+            return HttpResponseForbidden()
+        return super(EditPhotoView, self).dispatch(
+            request, *args, **kwargs)

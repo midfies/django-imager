@@ -1,19 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Jaims{% endblock %}
 {% load static %}
 {% block css %}
 <link href="{% static 'bootstrap/examples/cover/cover.css' %}" rel="stylesheet">
-<link href="{% static 'style.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
     <div class="jumbotron">
       <div class="container crop_main">
-        <h1>jaims!</h1>
-        <p>Just another imager site.</p>
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
         <img src="{{ random_photo.photo.url }}"/>
+        <i><h4>Just another imager site.</h4></i>
       </div>
     </div>
 {% endblock %}
