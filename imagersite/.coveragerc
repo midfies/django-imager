@@ -10,6 +10,7 @@ omit =
     manage.py
     lending_library/wsgi.py
     */apps.py
+    */wsgi.py
 
 [report]
 show_missing = True

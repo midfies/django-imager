@@ -41,7 +41,7 @@ class AlbumView(ListView):
     def get_context_data(self):
         """Get albums and photos and return them."""
         album = Album.objects.get(id=self.kwargs['albumid'])
-        if album.published == 'PUBLIC' or album.owner.user == self.request.user:
+        if album.published == 'PUBLIC' or album.owner == self.request.user.profile:
             photos = album.photos.all()
             return {'album': album, 'photos': photos}
         else:
@@ -122,7 +122,7 @@ class EditAlbumView(LoginRequiredMixin, UpdateView):
         """Test if album's owner is current user."""
         if request.user.is_authenticated():
             self.object = self.get_object()
-            return self.object.owner.user == request.user
+            return self.object.owner == request.user.profile
         return False
 
     def dispatch(self, request, *args, **kwargs):
@@ -164,7 +164,7 @@ class EditPhotoView(LoginRequiredMixin, UpdateView):
         """Test if album's owner is current user."""
         if request.user.is_authenticated():
             self.object = self.get_object()
-            return self.object.owner.user == request.user
+            return self.object.owner == request.user.profile
         return False
 
     def dispatch(self, request, *args, **kwargs):
