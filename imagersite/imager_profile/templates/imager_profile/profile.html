@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}{{profile.user.username}}'s Profile{% endblock %}
+
+
+{% block body %}
+<ul>
+    <div class="container">
+        <h1>{{ profile.user.username }}'s profile</h1>
+        <p>Type of photography: {{ profile.type_of_photography }}</p>
+        {% if user == profile.user %}
+            <p>Website: {{ profile.website }}</p>
+            <p>Bio: {{ profile.bio }}</p>
+            <p>Phone: {{ profile.phone }}</p>
+            <p>Name: {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+            <p>Email: {{ profile.user.email }}</p>
+            <p>Address: {{ profile.address }}</p>
+            <p>Camera Type: {{ profile.camera_type }}</p>
+            <p>Travel Radius: {{ profile.travel_radius }}</p>
+        <a href="{% url 'library' %}"><h2>To the library!</h2></a>
+        <a href="{% url 'edit_profile' %}"><h3>Edit Profile</h3></a>
+        {% endif %}
+    </div>
+</ul>
+{% endblock %}

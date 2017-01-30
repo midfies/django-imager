@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load thumbnail %}
+
+{% block title %}{{photo.owner.user.username}}'s Photo {{photo.title}}{% endblock %}
+
+
+{% block body %}
+<ul>
+        <h1>{{photo.title}}</h1>
+        <h4>{{photo.description}}<span style="float:right">Owner: {{photo.owner.user.username}}</span></h4>
+        <img src="{{ photo.photo.url }}" class="crop_main"/>
+        {% if request.user == photo.owner.user %}
+        <a href="{% url 'edit_photo' photo.id %}"><button class="btn edit_btn btn-sm btn-primary btn-block">Edit</button></a>
+        {% endif %}
+</ul>
+{% endblock %}

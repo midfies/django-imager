@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Jaims{% endblock %}
+{% load static %}
+{% block css %}
+<link href="{% static 'bootstrap/examples/cover/cover.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div class="jumbotron">
+      <div class="container crop_main">
+        <img src="{{ random_photo.photo.url }}"/>
+        <i><h4>Just another imager site.</h4></i>
+      </div>
+    </div>
+{% endblock %}
