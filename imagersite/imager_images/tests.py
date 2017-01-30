@@ -8,18 +8,18 @@ from faker import Faker
 from bs4 import BeautifulSoup
 
 
-class UserFactory(factory.django.DjangoModelFactory):
-        """User factory for testing."""
+# class UserFactory(factory.django.DjangoModelFactory):
+#         """User factory for testing."""
 
-        class Meta:
-            """Model meta."""
+#         class Meta:
+#             """Model meta."""
 
-            model = User
+#             model = User
 
-        username = factory.Sequence(lambda n: "User{}".format(n))
-        email = factory.LazyAttribute(
-            lambda x: "{}@imager.com".format(x.username.replace(" ", ""))
-        )
+#         username = factory.Sequence(lambda n: "User{}".format(n))
+#         email = factory.LazyAttribute(
+#             lambda x: "{}@imager.com".format(x.username.replace(" ", ""))
+#         )
 
 
 class PhotoFactory(factory.django.DjangoModelFactory):
@@ -30,7 +30,6 @@ class PhotoFactory(factory.django.DjangoModelFactory):
 
             model = Photo
 
-        owner = billy
         title = factory.Sequence(lambda n: "photo{}".format(n))
 
 
@@ -59,4 +58,4 @@ class PhotoAlbumBackendTests(TestCase):
         album.owner = photo.owner
         album.photos.add(photo)
         album.save()
-        self.assertTrue(album.photos.first() is photo)
+        self.assertTrue(album.photos.first() == photo)
