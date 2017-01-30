@@ -58,15 +58,7 @@ class ImagerProfile(models.Model):
 
     def __str__(self):
         """Return string representation of model instance."""
-        string = {
-            'username': self.user.username,
-            'camera_type': self.camera_type,
-            'address': self.address,
-            'website': self.website,
-            'phone': self.phone,
-            'type_of_photography': self.type_of_photography
-        }
-        return str(string)
+        return str(self.user.username)
 
 
 @receiver(post_save, sender=User)
