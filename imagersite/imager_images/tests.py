@@ -231,3 +231,13 @@ class PhotoAlbumBackendTests(TestCase):
     #     self.client.force_login(user)
     #     response = self.client.get("/images/photos/" + str(photo.pk) + "/edit/")
     #     self.assertTrue(response.status_code == 200)
+
+    def test_home_page_displays_photo(self):
+        """Test that there is a photo on the home page."""
+        from imagersite.views import HomeView
+        request = self.request.get('/')
+        view = HomeView.as_view()
+        response = view(request)
+        soup = BeautifulSoup(response.rendered_content, 'html.parser')
+        photos = soup.find_all('img')
+        self.assertEqual(len(photos), 1)
