@@ -3,6 +3,7 @@ from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User
 from imager_profile.models import ImagerProfile
 from imager_profile.views import EditProfileView
+from imager_profile.forms import EditProfileForm
 import factory
 from bs4 import BeautifulSoup
 
@@ -205,36 +206,36 @@ class ProfileFrontendTests(TestCase):
         self.client.login(username='BillyTheGoat', password='billyspassword')
         response = self.client.get('/profile/edit', follow=True)
         self.assertContains(response, '<h2>Edit your profile.</h2>')
+        self.assertEqual(response.status_code, 200)
 
-    # def test_profile_view_context(self):
-    #     """Assert that photos is passed in context, and that billy has no photos."""
-    #     self.add_billy()
-    #     response = self.client.get('/profile/BillyTheGoat', follow=True)
-    #     self.assertEqual(response.context['photos'].count(), 0)
+    def test_edit_profile_form_valid(self):
+        profile = self.add_billy()
+        form = EditProfileForm(instance=profile, data={
+            'camera_type': 'CANNON',
+            'address': '166 There St',
+            'bio': 'This is a bio',
+            'website': 'website@website.com',
+            'hireable': 'True',
+            'travel_radius': 1.0,
+            'type_of_photography': 'NATURE',
+            'First Name': 'Billy',
+            'Last Name': 'The Goat',
+            'Email': 'this@that.com'
+        })
+        self.assertTrue(form.is_valid())
 
-    # def test_profile_view_status_ok(self):
-    #     """Test profile view for billy is a thing."""
-    #     from imager_profile.views import ProfileView
-    #     req = self.request.get('/profile/BillyTheGoat')
-    #     view = ProfileView.as_view()
-    #     response = view(req)
-    #     self.assertEqual(response.status_code, 200)
-
-    # def test_edit_profile(self):
-    #     self.add_billy()
-    #     self.register_billy()
-    #     the_user = User.objects.first()
-    #     self.client.login(username='BillyTheGoat', password='billyspassword')
-    #     request = self.client.get('/profile/edit', {
-    #         'camera_type': 'CANNON',
-    #         'address': '166 There St',
-    #         'bio': 'This is a bio',
-    #         'website': 'website@website.com',
-    #         'hireable': 'True',
-    #         'travel_radius': 1.0,
-    #         'phone': '+47887889897',
-    #         'type_of_photography': 'NATURE',
-    #         'first_name': 'Billy',
-    #         'last_name': 'The Goat',
-    #         'email': 'this@that.com'
-    #     }, follow=True)
+    def test_edit_profile_form_invalid(self):
+        profile = self.add_billy()
+        form = EditProfileForm(instance=profile, data={
+            'camera_type': 'Baluga',
+            'address': '166 There St',
+            'bio': 'This is a bio',
+            'website': 'website@website.com',
+            'hireable': 'True',
+            'travel_radius': 1.0,
+            'type_of_photography': 'NATURE',
+            'First Name': 'Billy',
+            'Last Name': 'The Goat',
+            'Email': 'this@that.com'
+        })
+        self.assertFalse(form.is_valid())

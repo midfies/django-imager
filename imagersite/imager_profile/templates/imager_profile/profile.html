@@ -18,7 +18,7 @@
             <p>Camera Type: {{ profile.camera_type }}</p>
             <p>Travel Radius: {{ profile.travel_radius }}</p>
         <a href="{% url 'library' %}"><h2>To the library!</h2></a>
-        <a href="{% url 'edit_profile' %}"><h3>Edit Profile</h3></a>
+        <a href="{% url 'edit_profile' %}"><button class="edit_btn btn btn-sm btn-primary">Edit Profile</button></a>
         {% endif %}
     </div>
 </ul>

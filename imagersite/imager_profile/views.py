@@ -1,5 +1,4 @@
 """Views for profile page."""
-from django.contrib.auth.models import User
 from django.views.generic import DetailView, TemplateView, UpdateView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -19,7 +18,6 @@ class ProfileView(DetailView):
         context = super(ProfileView, self).get_context_data(**kwargs)
         profile = ImagerProfile.active.get(user__username=self.kwargs['slug'])
         context['profile'] = profile
-        context['userdata'] = User.objects.filter(username=self.kwargs['slug']).first()
         return context
 
 
@@ -34,7 +32,6 @@ class ProfileUserView(TemplateView):
         context = super(ProfileUserView, self).get_context_data(**kwargs)
         profile = ImagerProfile.active.get(user__username=self.request.user)
         context['profile'] = profile
-        context['userdata'] = User.objects.get(username=self.request.user)
         return context
 
 
