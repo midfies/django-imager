@@ -5,7 +5,6 @@ from imager_images.models import Photo, Album
 from imager_profile.tests import UserFactory
 import factory
 from django.urls import reverse_lazy
-from faker import Faker
 from bs4 import BeautifulSoup
 
 
@@ -17,7 +16,6 @@ class PhotoFactory(factory.django.DjangoModelFactory):
 
             model = Photo
 
-        # owner = billy
         title = factory.Sequence(lambda n: "photo{}".format(n))
         photo = 'imager_images/static/generic.jpg'
 
@@ -33,7 +31,7 @@ class AlbumFactory(factory.django.DjangoModelFactory):
         title = factory.Sequence(lambda n: "album{}".format(n))
 
 
-class PhotoAlbumBackendTests(TestCase):
+class PhotoAlbumTests(TestCase):
     """The Profile Model test runner for db stuff."""
 
     def setUp(self):
@@ -55,14 +53,14 @@ class PhotoAlbumBackendTests(TestCase):
         photo.save()
         return user
 
-    # def test_can_add_photos_to_album(self):
-    #     """Photo can be associated with albums."""
-    #     photo = self.photos[0]
-    #     album = AlbumFactory()
-    #     album.owner = photo.owner
-    #     album.photos.add(photo)
-    #     album.save()
-    #     self.assertTrue(album.photos.first() is photo)
+    def test_can_add_photos_to_album(self):
+        """Photo can be associated with albums."""
+        photo = self.photos[0]
+        album = AlbumFactory()
+        album.owner = photo.owner
+        album.photos.add(photo)
+        album.save()
+        self.assertTrue(album.photos.first() == photo)
 
     def test_library_route_is_status_ok(self):
         """Test that library view status code is 200."""
@@ -151,6 +149,8 @@ class PhotoAlbumBackendTests(TestCase):
         """Test that photo view status code is 200."""
         photo = self.photos[0]
         test_user = self.add_test_user()
+        photo.owner = test_user.profile
+        photo.save()
         self.client.force_login(test_user)
         response = self.client.get("/images/photos/" + str(photo.id), follow=True)
         self.assertTrue(response.status_code == 200)
@@ -159,9 +159,10 @@ class PhotoAlbumBackendTests(TestCase):
         """Test that photo view uses the correct template."""
         photo = self.photos[0]
         test_user = self.add_test_user()
+        photo.owner = test_user.profile
+        photo.save()
         self.client.force_login(test_user)
         request = self.client.get("/images/photos/" + str(photo.id), follow=True)
-        request.user = test_user
         self.assertTemplateUsed(request, 'imager_images/photo.html')
 
     def test_edit_photo_view_is_status_ok(self):
@@ -195,14 +196,47 @@ class PhotoAlbumBackendTests(TestCase):
         response = self.client.get("/images/albums/" + str(album.id), follow=True)
         self.assertTrue(response.status_code == 200)
 
-    # def test_album_view_is_forbidden_when_not_public(self):
-    #     """Test that album view status code is 200."""
-    #     album = self.albums[0]
-    #     album.save()
-    #     test_user = self.add_test_user()
-    #     self.client.force_login(test_user)
-    #     response = self.client.get("/images/albums/" + str(album.id), follow=True)
-    #     self.assertTrue(response.status_code == 403)
+    def test_album_view_is_forbidden_when_not_public_and_not_owned_by_user(self):
+        """Test that album view status code is 200."""
+        album = self.albums[0]
+        album.owner = self.users[0].profile
+        album.save()
+        test_user = self.add_test_user()
+        self.client.force_login(test_user)
+        response = self.client.get("/images/albums/" + str(album.id), follow=True)
+        self.assertEqual(response.status_code, 403)
+
+    def test_photo_view_is_forbidden_when_not_public_and_not_owned_by_user(self):
+        """Test that photo view status code is 200."""
+        photo = self.photos[0]
+        photo.owner = self.users[0].profile
+        photo.save()
+        test_user = self.add_test_user()
+        self.client.force_login(test_user)
+        response = self.client.get("/images/photos/" + str(photo.id), follow=True)
+        self.assertEqual(response.status_code, 403)
+
+    def test_album_view_status_ok_when_private_but_owned_by_user(self):
+        """Test that album view status code is 200."""
+        album = self.albums[0]
+        user = self.users[0]
+        album.owner = user.profile
+        album.save()
+        user.save()
+        self.client.force_login(user)
+        response = self.client.get("/images/albums/" + str(album.id), follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_photo_view_status_ok_when_private_but_owned_by_user(self):
+        """Test that photo view status code is 200."""
+        photo = self.photos[0]
+        user = self.users[0]
+        photo.owner = user.profile
+        photo.save()
+        user.save()
+        self.client.force_login(user)
+        response = self.client.get("/images/photos/" + str(photo.id), follow=True)
+        self.assertEqual(response.status_code, 200)
 
     def test_edit_album_view_is_status_ok(self):
         """Test that album view status code is 200."""
@@ -241,3 +275,15 @@ class PhotoAlbumBackendTests(TestCase):
         soup = BeautifulSoup(response.rendered_content, 'html.parser')
         photos = soup.find_all('img')
         self.assertEqual(len(photos), 1)
+
+    def test_add_photo_redirects_to_login_if_user_not_logged_in(self):
+        """Logged out user should be redirected to login if they try to add a photo."""
+        response = self.client.get(reverse_lazy('add_photo'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url[:15], '/accounts/login')
+
+    def test_add_album_redirects_to_login_if_user_not_logged_in(self):
+        """Logged out user should be redirected to login if they try to add a album."""
+        response = self.client.get(reverse_lazy('add_album'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url[:15], '/accounts/login')

@@ -1,15 +1,17 @@
 """Views for albums and photos."""
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.http import HttpResponseForbidden
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from imager_profile.models import ImagerProfile
 from imager_images.models import Album, Photo
-from imager_images.forms import AddAlbumForm, AddPhotoForm, EditPhotoForm, EditAlbumForm
+from imager_images.forms import (AddAlbumForm,
+                                 AddPhotoForm,
+                                 EditPhotoForm,
+                                 EditAlbumForm)
 
 # Create your views here.
 
@@ -25,27 +27,48 @@ class LibraryView(ListView):
         photos = profile.photos.all()
         albums = profile.albums.all()
         username = self.request.user.username
-        return {'photos': photos, 'profile': profile, 'albums': albums, 'username': username}
+        return {'photos': photos,
+                'profile': profile,
+                'albums': albums,
+                'username': username}
 
     def get_queryset(self):
         """Redefining because I have to."""
         return {}
 
 
-class AlbumView(ListView):
+class AlbumView(UserPassesTestMixin, ListView):
     """"AlbumView."""
 
     template_name = 'imager_images/album.html'
     model = Album
+    raise_exception = True
+    permission_denied_message = "You don't have access to this album."
+
+    def test_func(self):
+        """Override the userpassestest test_func."""
+        album = get_object_or_404(Album, id=self.kwargs['albumid'])
+        return album.published == 'PUBLIC' or album.owner.user == self.request.user
 
     def get_context_data(self):
         """Get albums and photos and return them."""
         album = Album.objects.get(id=self.kwargs['albumid'])
-        if album.published == 'PUBLIC' or album.owner == self.request.user.profile:
-            photos = album.photos.all()
-            return {'album': album, 'photos': photos}
-        else:
-            redirect(HttpResponseForbidden())
+        photos = album.photos.all()
+        return {'album': album, 'photos': photos}
+
+
+class PhotoView(UserPassesTestMixin, DetailView):
+    """"AlbumView."""
+
+    template_name = 'imager_images/photo.html'
+    model = Photo
+    raise_exception = True
+    permission_denied_message = "You don't have access to this photo."
+
+    def test_func(self):
+        """Override the userpassestest test_func."""
+        photo = get_object_or_404(Photo, id=self.kwargs['pk'])
+        return photo.published == 'PUBLIC' or photo.owner.user == self.request.user
 
 
 class AlbumGalleryView(ListView):
@@ -102,7 +125,7 @@ class AddAlbumView(LoginRequiredMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class EditAlbumView(LoginRequiredMixin, UpdateView):
+class EditAlbumView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """Edit an album."""
 
     login_required = True
@@ -110,6 +133,13 @@ class EditAlbumView(LoginRequiredMixin, UpdateView):
     template_name = 'imager_images/edit_album.html'
     model = Album
     form_class = EditAlbumForm
+    raise_exception = True
+    permission_denied_message = "You don't have access to this album."
+
+    def test_func(self):
+        """Override the userpassestest test_func."""
+        album = self.get_object()
+        return album.owner.user == self.request.user
 
     def get_form(self):
         """Retrieve form and customize some fields."""
@@ -117,20 +147,6 @@ class EditAlbumView(LoginRequiredMixin, UpdateView):
         form.fields['cover_photo'].queryset = self.request.user.profile.photos.all()
         form.fields['photos'].queryset = self.request.user.profile.photos.all()
         return form
-
-    def user_is_user(self, request):
-        """Test if album's owner is current user."""
-        if request.user.is_authenticated():
-            self.object = self.get_object()
-            return self.object.owner == request.user.profile
-        return False
-
-    def dispatch(self, request, *args, **kwargs):
-        """If user owns album let them do stuff."""
-        if not self.user_is_user(request):
-            return HttpResponseForbidden()
-        return super(EditAlbumView, self).dispatch(
-            request, *args, **kwargs)
 
 
 class AddPhotoView(LoginRequiredMixin, CreateView):
@@ -150,7 +166,7 @@ class AddPhotoView(LoginRequiredMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class EditPhotoView(LoginRequiredMixin, UpdateView):
+class EditPhotoView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """Edit a photo."""
 
     login_required = True
@@ -159,17 +175,10 @@ class EditPhotoView(LoginRequiredMixin, UpdateView):
     model = Photo
     form_class = EditPhotoForm
     form_class.Meta.exclude.append('photo')
+    raise_exception = True
+    permission_denied_message = "You don't have access to this album."
 
-    def user_is_user(self, request):
-        """Test if album's owner is current user."""
-        if request.user.is_authenticated():
-            self.object = self.get_object()
-            return self.object.owner == request.user.profile
-        return False
-
-    def dispatch(self, request, *args, **kwargs):
-        """If user doesn't own album, raise 403, else continue."""
-        if not self.user_is_user(request):
-            return HttpResponseForbidden()
-        return super(EditPhotoView, self).dispatch(
-            request, *args, **kwargs)
+    def test_func(self):
+        """Override the userpassestest test_func."""
+        photo = self.get_object()
+        return photo.owner.user == self.request.user

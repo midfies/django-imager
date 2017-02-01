@@ -129,21 +129,21 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = BASE_DIR
 STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = 'home'
 
 ACCOUNT_ACTIVATION_DAYS = 7
 
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
-# EMAIL_HOST_USER = 'anotherimagersite@gmail.com'
-# EMAIL_HOST_PASSWORD = 'bloomingonion'
-# DEFAULT_FROM_EMAIL = 'anotherimagersite@gmail.com'
+EMAIL_HOST_USER = 'anotherimagersite@gmail.com'
+EMAIL_HOST_PASSWORD = 'bloomingonion'
+DEFAULT_FROM_EMAIL = 'anotherimagersite@gmail.com'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # if DEBUG:
 #     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
