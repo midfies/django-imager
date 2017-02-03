@@ -17,7 +17,7 @@ a simple image management website using Django.
 * [fancybox](http://fancybox.net/)
 
 ##Testing Coverage:
-Name                         Stmts   Miss  Cover   Missing
+```Name                         Stmts   Miss  Cover   Missing
 ----------------------------------------------------------
 imager_images/__init__.py        0      0   100%
 imager_images/admin.py           9      0   100%
@@ -37,3 +37,4 @@ imagersite/urls.py               8      0   100%
 imagersite/views.py             13      0   100%
 ----------------------------------------------------------
 TOTAL                          318      0   100%
+```
