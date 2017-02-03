@@ -115,10 +115,12 @@ class AddAlbumView(LoginRequiredMixin, CreateView):
         form = super(AddAlbumView, self).get_form()
         form.fields['cover_photo'].queryset = self.request.user.profile.photos.all()
         form.fields['photos'].queryset = self.request.user.profile.photos.all()
+        # import pdb; pdb.set_trace()
         return form
 
     def form_valid(self, form):
         """If form post is successful, set the object's owner."""
+        # import pdb; pdb.set_trace()
         self.object = form.save()
         self.object.owner = self.request.user.profile
         self.object.save()

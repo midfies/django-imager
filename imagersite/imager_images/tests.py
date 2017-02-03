@@ -126,6 +126,37 @@ class PhotoAlbumTests(TestCase):
         request.user = test_user
         self.assertTemplateUsed(request, 'imager_images/add_photo.html')
 
+    def test_add_photo_submission_changes_owner(self):
+        """Test that submitting a new photo changes the owner."""
+        test_user = self.add_test_user()
+        self.client.force_login(test_user)
+        self.client.post("/images/photos/add/", {
+            'title': 'Test Photo',
+            'description': 'Test Description for photo',
+            'published': 'PUBLIC',
+            'photo': 'imager_images/static/generic.jpg'
+        })
+        photo = Photo.public.first()
+        self.assertTrue(photo.owner == test_user.profile)
+
+    def test_add_album_submission_changes_owner(self):
+        """Test that submitting a new album changes the owner."""
+        test_user = self.add_test_user()
+        self.client.force_login(test_user)
+        photo = Photo()
+        photo.owner = test_user.profile
+        photo.save()
+
+        self.client.post("/images/albums/add/", {
+            'title': 'Test Album',
+            'description': 'Test Description for album',
+            'published': 'PUBLIC',
+            'photos': [photo.id],
+            'cover_photo': ''
+        })
+        album = Album.public.first()
+        self.assertTrue(album.owner == test_user.profile)
+
     def test_add_album_route_is_status_ok(self):
         """Test that add album view status code is 200."""
         from imager_images.views import AddAlbumView
@@ -269,12 +300,16 @@ class PhotoAlbumTests(TestCase):
     def test_home_page_displays_photo(self):
         """Test that there is a photo on the home page."""
         from imagersite.views import HomeView
+        photo = Photo.objects.first()
+        photo.published = 'PUBLIC'
+        photo.title = 'random home photo'
+        photo.save()
         request = self.request.get('/')
         view = HomeView.as_view()
         response = view(request)
         soup = BeautifulSoup(response.rendered_content, 'html.parser')
         photos = soup.find_all('img')
-        self.assertEqual(len(photos), 1)
+        self.assertEqual(str(photos[0]), '<img src="/media/imager_images/static/generic.jpg"/>')
 
     def test_add_photo_redirects_to_login_if_user_not_logged_in(self):
         """Logged out user should be redirected to login if they try to add a photo."""
@@ -287,3 +322,8 @@ class PhotoAlbumTests(TestCase):
         response = self.client.get(reverse_lazy('add_album'))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url[:15], '/accounts/login')
+
+    def test_album_str_method_produces_username(self):
+        """Test that the string method for the profile prints the user."""
+        album = Album.objects.first()
+        self.assertTrue(str(album) == album.title)
