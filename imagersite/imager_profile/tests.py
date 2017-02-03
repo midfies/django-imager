@@ -239,3 +239,22 @@ class ProfileFrontendTests(TestCase):
             'Email': 'this@that.com'
         })
         self.assertFalse(form.is_valid())
+
+    def test_edit_profile_changes_profile(self):
+        """Test that edit profile changes profile."""
+        test_user = self.add_billy()
+        self.client.force_login(test_user.user)
+        self.client.post("/profile/edit/", {
+            'camera_type': 'CANNON',
+            'address': '166 There St',
+            'bio': 'This is a bio',
+            'website': 'website@website.com',
+            'hireable': 'True',
+            'travel_radius': 1.0,
+            'type_of_photography': 'NATURE',
+            'First Name': 'Billy',
+            'Last Name': 'The Goat',
+            'Email': 'this@that.com'
+        })
+        user = User.objects.first()
+        self.assertTrue(user.profile.camera_type == 'CANNON')
