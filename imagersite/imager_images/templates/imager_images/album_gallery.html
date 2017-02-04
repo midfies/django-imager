@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load thumbnail %}
+{% block css %}<link href="{% static 'style.css' %}" rel="stylesheet">{% endblock %}
+{% block title %}Public Album Gallery{% endblock %}
+
+
+{% block body %}
+<div class="container">
+  <div class="row">
+        {% for album in albums %}
+            <div class="col-sm-4">
+              <div class="panel panel-success">
+                <a href="{% url 'album' album.id %}">
+                  <div class="panel-heading">{{album.title}}</div>
+                  <div class="panel-body crop">
+                  {% if album.cover_photo %}
+                    <img src="{{ album.cover_photo.photo.url }}"/>
+                  {% else %}
+                    <img src="{% static 'generic.jpg' %}"/>
+                  {% endif %}
+                  </div>
+                </a>
+                <div class="panel-footer">{{album.description}}</div>
+              </div>
+            </div>
+        {% endfor %}
+</div>
+</div><br>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Album{% endblock %}
+{% load static %}
+{% block css %}<link href="{% static 'style.css' %}" rel="stylesheet">{% endblock %}
+
+{% block body %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h2>Edit Album.</h2>
+    {{ form.as_p }}
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+    <img src="{{ photo.photo.url }}" class="crop_main"/>
+  </form>
+{% endblock %}
