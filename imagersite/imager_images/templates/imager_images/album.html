@@ -23,6 +23,13 @@
               </a>
             </div>
             <div class="panel-footer">{{photo.description}}</div>
+            {% if photo.tags.all %}
+            <div class="panel-footer tag_footer">
+                {% for tag in photo.tags.all %}
+                    <a class='tag' href="{% url "tagged_photos" tag.slug %}">{{ tag }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
           </div>
         </div>
         {% endfor %}

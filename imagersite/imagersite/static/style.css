@@ -36,7 +36,7 @@ img {
 }
 
 .photo_panel {
-    height: 280px;
+    max-height: 320px;
     width: 32.5%;
     margin-top: 15px;
 }
@@ -52,6 +52,7 @@ img {
 
 .panel-footer {
     font-family: monospace;
+    overflow: hidden;
 }
 
 .navbar {
@@ -93,4 +94,16 @@ p {
     position: relative;
     clear: both;
     top: 20px;
+    margin-bottom: 14px;
+}
+
+a.tag {
+    border: 1px solid #dedeFf;
+    border-radius: 2px;
+    background-color: snow;
+    padding: 3px 5px;
+}
+
+a.tag:hover {
+    background-color: #f3f9f9;
 }

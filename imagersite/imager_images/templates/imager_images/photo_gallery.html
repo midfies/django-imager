@@ -9,6 +9,9 @@
 {% block body %}
 <div class="container" style="padding: 0">
   <div class="row">
+        {% if tag %}
+          <h2>Photos tagged as <b><span style="font-size: 130%;">{{ tag }}</span></b></h2>
+        {% endif %}
         {% for photo in photos %}
             <div class="col-sm-4 photo_panel">
               <div class="panel panel-success">
@@ -20,8 +23,8 @@
                     <img src="{{ photo.photo.url }}"/>
                   </a>
                 </div>
-                <div class="panel-footer">
-                  {{photo.description}}
+                <div class="panel-footer tag_footer">
+                  <span style="max-width: 70%">{{photo.description}}</span>
                   <span style="float: right; color: gray;"><i>{{photo.owner.user.username}}</i></span>
                 </div>
               </div>

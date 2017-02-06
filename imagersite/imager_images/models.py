@@ -1,6 +1,7 @@
 """Models for the imager_images app."""
 
 from django.db import models
+from taggit.managers import TaggableManager
 from imager_profile.models import ImagerProfile
 
 
@@ -17,6 +18,8 @@ class Photo(models.Model):
 
     objects = models.Manager()
     public = PublicPhotosManger()
+
+    tags = TaggableManager()
 
     owner = models.ForeignKey(
         ImagerProfile,
