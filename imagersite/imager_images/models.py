@@ -19,7 +19,7 @@ class Photo(models.Model):
     objects = models.Manager()
     public = PublicPhotosManger()
 
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     owner = models.ForeignKey(
         ImagerProfile,
@@ -42,7 +42,7 @@ class Photo(models.Model):
     published = models.CharField(max_length=144,
                                  choices=PUBLISH_CHOICES,
                                  default='PRIVATE')
-    photo = models.ImageField(upload_to='', blank=True, null=True)
+    photo = models.ImageField(upload_to='')
 
     def __str__(self):
         """Return readable repr."""
