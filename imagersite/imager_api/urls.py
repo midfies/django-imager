@@ -1,10 +1,10 @@
-from django.conf.urls import url, include
-from rest_framework.urlpatterns import format_suffix_patterns
-from imager_api import views
+"""URL patterns."""
+
+from django.conf.urls import url
+from imager_api.views import PhotoViewSet, AlbumViewSet
+
 
 urlpatterns = [
-    url(r'profile/(?P<pk>\d+)/photos/$', views.UserPhotoList.as_view(), name='user_photo_list'),
-    url(r'^photo/(?P<pk>\d+)/$', views.Photo.as_view(), name='just_photo'),
+    url(r'^photos/$', PhotoViewSet.as_view({'get': 'list'}), name='photo_list'),
+    url(r'^albums/$', AlbumViewSet.as_view({'get': 'list'}), name='album_list'),
 ]
-
-urlpatterns = format_suffix_patterns(urlpatterns)

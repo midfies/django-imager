@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'imagersite',
     'sorl.thumbnail',
     'rest_framework',
+    'imager_api.apps.ImagerApiConfig',
 ]
 
 MIDDLEWARE = [

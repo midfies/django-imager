@@ -1,28 +1,29 @@
-from imager_images.models import Photo
-from imager_profile.models import ImagerProfile
-from imager_api.serializers import PhotoSerializer
-from rest_framework import generics
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework import renderers
+"""View API endpoint."""
+
+from rest_framework import viewsets
+from imager_images.models import Photo, Album
+from imager_api.serializers import PhotoSerializer, AlbumSerializer
+from django.urls import reverse_lazy
+from rest_framework.permissions import IsAuthenticated
 
 
-class UserPhotoList(generics.ListCreateAPIView):
+class PhotoViewSet(viewsets.ModelViewSet):
+    """API endpoint for photo views."""
+    permission_classes = (IsAuthenticated,)
     serializer_class = PhotoSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    login_url = reverse_lazy("login")
 
     def get_queryset(self):
-        profile = ImagerProfile.active.get(pk=self.kwargs.get('pk'))
-        if profile.user == self.request.user:
-            return profile.photos.all()
-        else:
-            return profile.photos.filter(published='PUBLIC')
+        """Get queryset for photos of owner."""
+        return Photo.objects.filter(owner=self.request.user.profile)
 
 
-class Photo(generics.GenericAPIView):
-    queryset = Photo.objects.all()
-    renderer_classes = (renderers.StaticHTMLRenderer,)
+class AlbumViewSet(viewsets.ModelViewSet):
+    """API endpoint for album views."""
+    permission_classes = (IsAuthenticated,)
+    serializer_class = AlbumSerializer
+    login_url = reverse_lazy("login")
 
-    def get(self, request, *args, **kwargs):
-        photo = self.get_object()
-        return Response(photo)
+    def get_queryset(self):
+        """Get queryset for albums of owner."""
+        return Album.objects.filter(owner=self.request.user.profile)
