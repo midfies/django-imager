@@ -70,35 +70,33 @@ class PhotoView(UserPassesTestMixin, DetailView):
         photo = get_object_or_404(Photo, id=self.kwargs['pk'])
         return photo.published == 'PUBLIC' or photo.owner.user == self.request.user
 
+    def get_context_data(self, **kwargs):
+        """Include like-tagged photos."""
+        context = super(PhotoView, self).get_context_data(**kwargs)
+        context['tag_photos'] = context['photo'].tags.similar_objects()[:5]
+        return context
+
 
 class AlbumGalleryView(ListView):
     """"AlbumGalleryView."""
 
     template_name = 'imager_images/album_gallery.html'
-
-    def get_context_data(self):
-        """Get all public albums return them."""
-        albums = Album.public.all()
-        return {'albums': albums}
+    context_object_name = 'albums'
 
     def get_queryset(self):
         """Redefining because I have to."""
-        return {}
+        return Album.public.all()
 
 
 class PhotoGalleryView(ListView):
     """"PhotoGalleryView."""
 
     template_name = 'imager_images/photo_gallery.html'
-
-    def get_context_data(self):
-        """Get all public photos and return them."""
-        photos = Photo.public.all()
-        return {'photos': photos}
+    context_object_name = 'photos'
 
     def get_queryset(self):
         """Redefining because I have to."""
-        return {}
+        return Photo.public.all()
 
 
 class AddAlbumView(LoginRequiredMixin, CreateView):
@@ -184,3 +182,20 @@ class EditPhotoView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         """Override the userpassestest test_func."""
         photo = self.get_object()
         return photo.owner.user == self.request.user
+
+
+class TagPhotoGalleryView(ListView):
+    """List photos with a tag."""
+
+    template_name = 'imager_images/photo_gallery.html'
+    context_object_name = 'photos'
+
+    def get_queryset(self):
+        """Define a restricted queryset just for certain tag."""
+        return Photo.public.filter(tags__slug=self.kwargs.get("slug")).all()
+
+    def get_context_data(self, **kwargs):
+        """Get context."""
+        context = super(TagPhotoGalleryView, self).get_context_data(**kwargs)
+        context["tag"] = self.kwargs.get("slug")
+        return context

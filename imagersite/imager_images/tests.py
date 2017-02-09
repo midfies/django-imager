@@ -1,11 +1,12 @@
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User
+from django.urls import reverse_lazy
+from django.core.files.uploadedfile import SimpleUploadedFile
 from imager_profile.models import ImagerProfile
 from imager_images.models import Photo, Album
 from imager_profile.tests import UserFactory
 import factory
-from django.urls import reverse_lazy
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as Soup
 
 
 class PhotoFactory(factory.django.DjangoModelFactory):
@@ -17,7 +18,7 @@ class PhotoFactory(factory.django.DjangoModelFactory):
             model = Photo
 
         title = factory.Sequence(lambda n: "photo{}".format(n))
-        photo = 'imager_images/static/generic.jpg'
+        photo = SimpleUploadedFile('test.jpg', open('imager_images/static/generic.jpg', 'rb').read())
 
 
 class AlbumFactory(factory.django.DjangoModelFactory):
@@ -52,6 +53,17 @@ class PhotoAlbumTests(TestCase):
         user.save()
         photo.save()
         return user
+
+    def add_photo_to_user(self, tags='', follow=False, published='PUBLIC'):
+        """Upload a photo for a user."""
+        response = self.client.post("/images/photos/add/", {
+            'title': 'A Test Photo',
+            'description': 'Test Description for photo',
+            'published': published,
+            'photo': SimpleUploadedFile('test.jpg', open('imager_images/static/generic.jpg', 'rb').read()),
+            'tags': tags
+        }, follow=follow)
+        return response
 
     def test_can_add_photos_to_album(self):
         """Photo can be associated with albums."""
@@ -130,12 +142,7 @@ class PhotoAlbumTests(TestCase):
         """Test that submitting a new photo changes the owner."""
         test_user = self.add_test_user()
         self.client.force_login(test_user)
-        self.client.post("/images/photos/add/", {
-            'title': 'Test Photo',
-            'description': 'Test Description for photo',
-            'published': 'PUBLIC',
-            'photo': 'imager_images/static/generic.jpg'
-        })
+        self.add_photo_to_user()
         photo = Photo.public.first()
         self.assertTrue(photo.owner == test_user.profile)
 
@@ -307,9 +314,9 @@ class PhotoAlbumTests(TestCase):
         request = self.request.get('/')
         view = HomeView.as_view()
         response = view(request)
-        soup = BeautifulSoup(response.rendered_content, 'html.parser')
+        soup = Soup(response.rendered_content, 'html.parser')
         photos = soup.find_all('img')
-        self.assertEqual(str(photos[0]), '<img src="/media/imager_images/static/generic.jpg"/>')
+        self.assertEqual(len(photos), 1)
 
     def test_add_photo_redirects_to_login_if_user_not_logged_in(self):
         """Logged out user should be redirected to login if they try to add a photo."""
@@ -327,3 +334,29 @@ class PhotoAlbumTests(TestCase):
         """Test that the string method for the profile prints the user."""
         album = Album.objects.first()
         self.assertTrue(str(album) == album.title)
+
+    def test_can_add_tags_to_photo(self):
+        """Should be able to manually add tags to a photo."""
+        photo = self.photos[0]
+        photo.tags.add('blue', 'berry', 'pie')
+        self.assertCountEqual(['blue', 'berry', 'pie'], [x.slug for x in photo.tags.all()])
+
+    def test_tags_show_up_in_library_view(self):
+        """After upload photo, redirected to library page where tags should appear."""
+        test_user = self.add_test_user()
+        self.client.force_login(test_user)
+        response = self.add_photo_to_user(tags='beany babies', follow=True)
+        soup = Soup(response.content, 'html.parser')
+        tags = soup.find_all('a', class_='tag')
+        for tag in tags:
+            self.assertTrue(tag.text in ['beany', 'babies'])
+
+    def test_tagged_photo_shows_up_in_tagged_photos_list(self):
+        """Photo with tags should show up in the list view for those tags."""
+        test_user = self.add_test_user()
+        self.client.force_login(test_user)
+        self.add_photo_to_user(tags='burpkin, banana')
+        self.add_photo_to_user(tags='burpkin, bongos')
+        response = self.client.get('/images/photos/tagged/burpkin/')
+        soup = Soup(response.content, 'html.parser')
+        self.assertEqual(len(soup.find_all('img')), 2)

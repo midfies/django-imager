@@ -9,9 +9,36 @@
 <ul>
         <h1>{{photo.title}}</h1>
         <h4>{{photo.description}}<span style="float:right">Owner: {{photo.owner.user.username}}</span></h4>
+        {% if photo.tags.all %}
+        <h4>Tags:
+            {% for tag in photo.tags.all %}
+                <a class='tag' href="{% url "tagged_photos" tag.slug %}">{{ tag }}</a>
+            {% endfor %}
+        </h4>
+        {% endif %}
         <img src="{{ photo.photo.url }}" class="crop_main"/>
         {% if request.user == photo.owner.user %}
         <a href="{% url 'edit_photo' photo.id %}"><button class="btn edit_btn btn-sm btn-primary btn-block">Edit</button></a>
+        {% endif %}
+        {% if tag_photos %}
+            {% for tag_photo in tag_photos %}
+            <div class="col-sm-4 photo_panel">
+                <div class="panel panel-success">
+                    <a href="{% url 'photo' tag_photo.id %}">
+                        <div class="panel-heading">{{tag_photo.title}}</div>
+                    <div class="panel-body crop">
+                        <img src="{{ tag_photo.photo.url }}" height = 100, width= 100/>
+                    </div>
+                    <div class="panel-footer">{{tag_photo.description}}</div>
+                    </a>
+                    <div class="panel-footer tag_footer">
+                        {% for tag in tag_photo.tags.all %}
+                            <a class='tag' href="{% url "tagged_photos" tag.slug %}">{{ tag }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         {% endif %}
 </ul>
 {% endblock %}
