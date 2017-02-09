@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'imager_images',
     'imagersite',
     'sorl.thumbnail',
-
+    'rest_framework',
+    'imager_api.apps.ImagerApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -151,3 +152,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'MEDIA')
 MEDIA_URL = "/media/"
+
+
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 10
+}
