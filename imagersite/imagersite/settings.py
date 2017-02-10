@@ -160,8 +160,16 @@ MEDIA_URL = "/media/"
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get('GITHUB_APP_ID', '')
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('GITHUB_API_SECRET', '')
+
+SOCIAL_AUTH_TWITTER_KEY = os.environ.get('TWITTER_APP_ID', '')
+SOCIAL_AUTH_TWITTER_SECRET = os.environ.get('TWITTER_API_SECRET', '')
+
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('FACEBOOK_APP_ID', '')
+SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('FACEBOOK_API_SECRET', '')
