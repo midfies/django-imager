@@ -18,7 +18,7 @@ from imager_images.forms import (AddAlbumForm,
 
 @login_required
 def LibraryView(request):
-    """Fu."""
+    """List view of user's albums and photos."""
     profile = get_object_or_404(ImagerProfile.active, user__username=request.user.username)
     all_albums = profile.albums.all()
     all_photos = profile.photos.all()
