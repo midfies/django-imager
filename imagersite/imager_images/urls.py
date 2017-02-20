@@ -15,7 +15,7 @@ from imager_images.views import (
 )
 
 urlpatterns = [
-    url(r'^library/$', LibraryView.as_view(), name='library'),
+    url(r'^library/$', LibraryView, name='library'),
     url(r'albums/(?P<albumid>\d+)/$', AlbumView.as_view(), name='album'),
     url(r'albums/$', AlbumGalleryView.as_view(), name='album_gallery'),
     url(r'photos/$', PhotoGalleryView.as_view(), name='photo_gallery'),

@@ -2,9 +2,11 @@
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView, DetailView
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from imager_profile.models import ImagerProfile
 from imager_images.models import Album, Photo
@@ -13,28 +15,32 @@ from imager_images.forms import (AddAlbumForm,
                                  EditPhotoForm,
                                  EditAlbumForm)
 
-# Create your views here.
 
+@login_required
+def LibraryView(request):
+    """List view of user's albums and photos."""
+    profile = get_object_or_404(ImagerProfile.active, user__username=request.user.username)
+    all_albums = profile.albums.all()
+    all_photos = profile.photos.all()
+    album_page = request.GET.get("album_page", 1)
+    photo_page = request.GET.get("photo_page", 1)
 
-class LibraryView(ListView):
-    """"LibraryView."""
+    album_pages = Paginator(all_albums, 4)
+    photo_pages = Paginator(all_photos, 4)
 
-    template_name = 'imager_images/library.html'
+    try:
+        albums = album_pages.page(album_page)
+        photos = photo_pages.page(photo_page)
+    except PageNotAnInteger:
+        albums = album_pages.page(1)
+        photos = photo_pages.page(1)
+    except EmptyPage:
+        albums = album_pages.page(album_pages.num_pages)
+        photos = photo_pages.page(photo_pages.num_pages)
 
-    def get_context_data(self):
-        """Get albums and photos and return them."""
-        profile = ImagerProfile.active.get(user__username=self.request.user.username)
-        photos = profile.photos.all()
-        albums = profile.albums.all()
-        username = self.request.user.username
-        return {'photos': photos,
-                'profile': profile,
-                'albums': albums,
-                'username': username}
-
-    def get_queryset(self):
-        """Redefining because I have to."""
-        return {}
+    return render(request,
+                  "imager_images/library.html",
+                  {"albums": albums, 'photos': photos})
 
 
 class AlbumView(UserPassesTestMixin, ListView):
@@ -43,18 +49,23 @@ class AlbumView(UserPassesTestMixin, ListView):
     template_name = 'imager_images/album.html'
     model = Album
     raise_exception = True
+    paginate_by = 4
     permission_denied_message = "You don't have access to this album."
 
     def test_func(self):
         """Override the userpassestest test_func."""
-        album = get_object_or_404(Album, id=self.kwargs['albumid'])
-        return album.published == 'PUBLIC' or album.owner.user == self.request.user
+        self.album = get_object_or_404(Album, id=self.kwargs['albumid'])
+        return self.album.published == 'PUBLIC' or self.album.owner.user == self.request.user
 
-    def get_context_data(self):
+    def get_context_data(self, **kwargs):
         """Get albums and photos and return them."""
-        album = Album.objects.get(id=self.kwargs['albumid'])
-        photos = album.photos.all()
-        return {'album': album, 'photos': photos}
+        context = super(AlbumView, self).get_context_data(**kwargs)
+        context['album'] = self.album
+        return context
+
+    def get_queryset(self):
+        """Return photos assoicated with album."""
+        return self.album.photos.all()
 
 
 class PhotoView(UserPassesTestMixin, DetailView):
@@ -82,10 +93,8 @@ class AlbumGalleryView(ListView):
 
     template_name = 'imager_images/album_gallery.html'
     context_object_name = 'albums'
-
-    def get_queryset(self):
-        """Redefining because I have to."""
-        return Album.public.all()
+    paginate_by = 4
+    queryset = Album.public.all()
 
 
 class PhotoGalleryView(ListView):
@@ -93,10 +102,7 @@ class PhotoGalleryView(ListView):
 
     template_name = 'imager_images/photo_gallery.html'
     context_object_name = 'photos'
-
-    def get_queryset(self):
-        """Redefining because I have to."""
-        return Photo.public.all()
+    queryset = Photo.public.all()
 
 
 class AddAlbumView(LoginRequiredMixin, CreateView):

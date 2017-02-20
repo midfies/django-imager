@@ -29,6 +29,16 @@
             </div>
         {% endfor %}
         </div>
+        <nav class='page-nav'>
+            <ul>
+                {% if albums.has_previous %}
+                <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.previous_page_number }}">&larr;</a></li>
+                {% endif %}
+                {% if albums.has_next %}
+                <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.next_page_number }}">&rarr;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
     </div><br>
         <hr>
         <div class="container">
@@ -56,6 +66,16 @@
             </div>
         {% endfor %}
         </div>
+        <nav class='page-nav'>
+            <ul>
+                {% if photos.has_previous %}
+                <li><a href="?photo_page={{ photos.previous_page_number }}&album_page={{ albums.number }}">&larr;</a></li>
+                {% endif %}
+                {% if photos.has_next %}
+                <li><a href="?photo_page={{ photos.next_page_number }}&album_page={{ albums.number }}">&rarr;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
 </div><br>
     {% endif %}
 </ul>

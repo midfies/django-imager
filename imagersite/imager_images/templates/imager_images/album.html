@@ -9,35 +9,47 @@
 {% block body %}
 <div class="container">
   <div class="row">
-        <h1>{{ album.title }}</h1>
-        <h4>{{ album.description }}<span style="float:right">Owner: {{album.owner.user.username}}</span></h4>
-        {% for photo in photos %}
-        <div class="col-sm-4 photo_panel">
-          <div class="panel panel-success">
-            <a href="{% url 'photo' photo.id %}">
-              <div class="panel-heading">{{photo.title}}</div>
-            </a>
-            <div class="panel-body crop">
-              <a class="fancybox" rel="gallery2" href="{{photo.photo.url}}">
-                <img src="{{ photo.photo.url }}" class='album_display'/>
-              </a>
-            </div>
-            <div class="panel-footer">{{photo.description}}</div>
-            {% if photo.tags.all %}
-            <div class="panel-footer tag_footer">
-                {% for tag in photo.tags.all %}
-                    <a class='tag' href="{% url "tagged_photos" tag.slug %}">{{ tag }}</a>
-                {% endfor %}
-            </div>
-            {% endif %}
-          </div>
+    <h1>{{ album.title }}</h1>
+    <h4>{{ album.description }}<span style="float:right">Owner: {{album.owner.user.username}}</span></h4>
+    {% for photo in object_list %}
+    <div class="col-sm-4 photo_panel">
+      <div class="panel panel-success">
+        <a href="{% url 'photo' photo.id %}">
+          <div class="panel-heading">{{photo.title}}</div>
+        </a>
+        <div class="panel-body crop">
+          <a class="fancybox" rel="gallery2" href="{{photo.photo.url}}">
+            <img src="{{ photo.photo.url }}" class='album_display'/>
+          </a>
         </div>
-        {% endfor %}
-        {% if request.user == album.owner.user %}
-        <a href="{% url 'edit_album' album.id %}"><button class="edit_btn btn btn-sm btn-primary">Edit</button></a>
+        <div class="panel-footer">{{photo.description}}</div>
+        {% if photo.tags.all %}
+        <div class="panel-footer tag_footer">
+            {% for tag in photo.tags.all %}
+                <a class='tag' href="{% url "tagged_photos" tag.slug %}">{{ tag }}</a>
+            {% endfor %}
+        </div>
         {% endif %}
-
+      </div>
+    </div>
+    {% endfor %}
   </div>
+
+  <nav class='page-nav'>
+      <ul>
+          {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&larr;</a></li>
+          {% endif %}
+          {% if page_obj.has_next %}
+          <li><a href="?page={{ page_obj.next_page_number }}">&rarr;</a></li>
+          {% endif %}
+      </ul>
+  </nav>
+
+  {% if request.user == album.owner.user %}
+  <a href="{% url 'edit_album' album.id %}"><button class="edit_btn btn btn-sm btn-primary">Edit</button></a>
+  {% endif %}
+
 </div><br>
 {% endblock %}
 {% block scripts %}
