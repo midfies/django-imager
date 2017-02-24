@@ -12,5 +12,11 @@
         <h2 class="form-signin-heading">Please sign in</h2>
         {{ form.as_p }}
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <br>
+            <p><strong>-- OR --</strong></p>
+        <a href="{% url 'social:begin' 'github' %}">Login with GitHub</a><br>
+        <a href="{% url 'social:begin' 'twitter' %}">Login with Twitter</a><br>
+        <a href="{% url 'social:begin' 'facebook' %}">Login with Facebook</a><br>
     </form>
+
 {% endblock %}
