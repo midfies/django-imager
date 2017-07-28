@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load thumbnail %}
 {% block css %}<link href="{% static 'style.css' %}" rel="stylesheet">{% endblock %}
 
 {% block title %}{{profile.user}}'s Library{% endblock %}
@@ -32,10 +31,12 @@
         <nav class='page-nav'>
             <ul>
                 {% if albums.has_previous %}
-                <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.previous_page_number }}">&larr;</a></li>
+                <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.previous_page_number}}&photos_per_page={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&larr;
+                </a></li>
                 {% endif %}
                 {% if albums.has_next %}
-                <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.next_page_number }}">&rarr;</a></li>
+                <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.next_page_number}}&photos_per={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&rarr;
+                </a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -69,10 +70,12 @@
         <nav class='page-nav'>
             <ul>
                 {% if photos.has_previous %}
-                <li><a href="?photo_page={{ photos.previous_page_number }}&album_page={{ albums.number }}">&larr;</a></li>
+                <li><a href="?photo_page={{ photos.previous_page_number }}&album_page={{ albums.number}}&photos_per={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&larr;
+                </a></li>
                 {% endif %}
                 {% if photos.has_next %}
-                <li><a href="?photo_page={{ photos.next_page_number }}&album_page={{ albums.number }}">&rarr;</a></li>
+                <li><a href="?photo_page={{photos.next_page_number }}&album_page={{albums.number}}&photos_per={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&rarr;
+                </a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -90,15 +93,3 @@
       });
     </script>
 {% endblock %}
-
-    {% if True %}
-    {% thumbnail album.cover_photo.url "100x100" crop="center" as im %}
-        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
-    {% endthumbnail %}
-    {% else %}
-        {% with STATIC_URL|add:"/generic.jpg" as path %}
-        {% thumbnail path "100x100" crop="center" as im %}
-        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
-    {% endthumbnail %}
-    {% endwith %}
-    {%endif%}

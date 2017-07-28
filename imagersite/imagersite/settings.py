@@ -40,8 +40,7 @@ INSTALLED_APPS = [
     'imager_profile',
     'imager_images',
     'imagersite',
-    'sorl.thumbnail',
-
+    'easy_thumbnails',
 ]
 
 MIDDLEWARE = [
@@ -88,7 +87,7 @@ DATABASES = {
         'HOST': os.environ.get('DB_HOST', ''),
         'PORT': os.environ.get('DB_PORT', ''),
         'TEST': {
-            'NAME': 'test'
+            'NAME': os.environ.get('DB_PORT', 'jaims_test')
         }
     }
 }
@@ -135,18 +134,16 @@ LOGIN_REDIRECT_URL = 'home'
 
 ACCOUNT_ACTIVATION_DAYS = 7
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-
-EMAIL_HOST_USER = 'anotherimagersite@gmail.com'
-EMAIL_HOST_PASSWORD = 'bloomingonion'
-DEFAULT_FROM_EMAIL = 'anotherimagersite@gmail.com'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-# if DEBUG:
-#     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ['EMAIL_HOST']
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'MEDIA')
 MEDIA_URL = "/media/"

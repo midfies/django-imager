@@ -20,25 +20,10 @@ class ImagerProfile(models.Model):
     objects = models.Manager()
     active = ActiveUsersManger()
 
-    user = models.OneToOneField(
-        User,
-        related_name='profile',
-        on_delete=models.CASCADE,
-    )
-    PHOTOGRAPHY_CHOICES = (
-        ('NATURE', 'Nature'),
-        ('URBAN', 'Urban'),
-        ('PORTRAIT', 'Portrait'),
-        ('OTHER', 'Other'),
-    )
-    CAMERA_CHOICES = (
-        ('IPHONE', 'iPhone'),
-        ('NIKON', 'Nikon'),
-        ('CANNON', 'Cannon'),
-        ('OTHER', 'Other'),
-    )
-
-    camera_type = models.CharField(max_length=128, choices=CAMERA_CHOICES)
+    user = models.OneToOneField(User,
+                                related_name='profile',
+                                on_delete=models.CASCADE)
+    camera_type = models.CharField(max_length=128, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     website = models.CharField(max_length=255, blank=True, null=True)
@@ -48,7 +33,7 @@ class ImagerProfile(models.Model):
                                         null=True)
     phone = PhoneNumberField()
     type_of_photography = models.CharField(max_length=144,
-                                           choices=PHOTOGRAPHY_CHOICES,
+                                           blank=True,
                                            null=True)
 
     @property

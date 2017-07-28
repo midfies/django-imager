@@ -9,7 +9,11 @@
 {% block body %}
     <div class="jumbotron">
       <div class="container crop_main">
-        <img src="{{ random_photo.photo.url }}"/>
+        {% if random_photo %}
+            <img src="{{ random_photo.photo.url }}"/>
+        {% else %}
+            <img src="{% static 'pet-sweep.jpg' %}">
+        {% endif %}
         <i><h4>Just another imager site.</h4></i>
       </div>
     </div>

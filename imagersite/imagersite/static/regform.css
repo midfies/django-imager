@@ -1,0 +1,34 @@
+.helptext {
+    position: absolute;
+    display: none;
+    margin: 0 auto;
+    top: 80%;
+}
+
+.helptext li {
+    list-style: none;
+    padding: 0;
+}
+.helptext ul {
+    margin: 0;
+    padding: 0;
+}
+
+ul#form-ul {
+    padding: 0;
+    min-height: 40vh;
+}
+
+ul#form-ul>li {
+    list-style: none;
+}
+ul#form-ul>li label {
+    margin-top: 10px;
+}
+
+ul#form-ul > li:hover > .helptext {
+    display: block;
+}
+button {
+    margin-top: 14px;
+}

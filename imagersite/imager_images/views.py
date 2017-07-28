@@ -1,5 +1,5 @@
 """Views for albums and photos."""
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, render
@@ -17,16 +17,18 @@ from imager_images.forms import (AddAlbumForm,
 
 
 @login_required
-def LibraryView(request):
+def library_view(request):
     """List view of user's albums and photos."""
-    profile = get_object_or_404(ImagerProfile.active, user__username=request.user.username)
+    profile = get_object_or_404(ImagerProfile.active, user=request.user)
     all_albums = profile.albums.all()
     all_photos = profile.photos.all()
     album_page = request.GET.get("album_page", 1)
     photo_page = request.GET.get("photo_page", 1)
+    albums_per_page = request.GET.get("albums_per", 6)
+    photos_per_page = request.GET.get("photos_per", 6)
 
-    album_pages = Paginator(all_albums, 4)
-    photo_pages = Paginator(all_photos, 4)
+    album_pages = Paginator(all_albums, albums_per_page)
+    photo_pages = Paginator(all_photos, photos_per_page)
 
     try:
         albums = album_pages.page(album_page)
@@ -41,31 +43,6 @@ def LibraryView(request):
     return render(request,
                   "imager_images/library.html",
                   {"albums": albums, 'photos': photos})
-
-
-class AlbumView(UserPassesTestMixin, ListView):
-    """"AlbumView."""
-
-    template_name = 'imager_images/album.html'
-    model = Album
-    raise_exception = True
-    paginate_by = 4
-    permission_denied_message = "You don't have access to this album."
-
-    def test_func(self):
-        """Override the userpassestest test_func."""
-        self.album = get_object_or_404(Album, id=self.kwargs['albumid'])
-        return self.album.published == 'PUBLIC' or self.album.owner.user == self.request.user
-
-    def get_context_data(self, **kwargs):
-        """Get albums and photos and return them."""
-        context = super(AlbumView, self).get_context_data(**kwargs)
-        context['album'] = self.album
-        return context
-
-    def get_queryset(self):
-        """Return photos assoicated with album."""
-        return self.album.photos.all()
 
 
 class PhotoView(UserPassesTestMixin, DetailView):
@@ -88,6 +65,39 @@ class PhotoView(UserPassesTestMixin, DetailView):
         return context
 
 
+class AlbumView(UserPassesTestMixin, ListView):
+    """"AlbumView."""
+
+    template_name = 'imager_images/album.html'
+    model = Album
+    raise_exception = True
+    paginate_by = 4
+    permission_denied_message = "You don't have access to this album."
+
+    def test_func(self):
+        """Override the userpassestest test_func."""
+        self.album = get_object_or_404(Album, id=self.kwargs['pk'])
+        return self.album.published == 'PUBLIC' or self.album.owner.user == self.request.user
+
+    def get_context_data(self, **kwargs):
+        """Get albums and photos and return them."""
+        context = super(AlbumView, self).get_context_data(**kwargs)
+        context['album'] = self.album
+        return context
+
+    def get_queryset(self):
+        """Return photos assoicated with album."""
+        return self.album.photos.all()
+
+
+class PhotoGalleryView(ListView):
+    """"PhotoGalleryView."""
+
+    template_name = 'imager_images/photo_gallery.html'
+    context_object_name = 'photos'
+    queryset = Photo.public.all()
+
+
 class AlbumGalleryView(ListView):
     """"AlbumGalleryView."""
 
@@ -97,12 +107,19 @@ class AlbumGalleryView(ListView):
     queryset = Album.public.all()
 
 
-class PhotoGalleryView(ListView):
-    """"PhotoGalleryView."""
+class AddPhotoView(LoginRequiredMixin, CreateView):
+    """Add a new photo."""
 
-    template_name = 'imager_images/photo_gallery.html'
-    context_object_name = 'photos'
-    queryset = Photo.public.all()
+    login_required = True
+    success_url = reverse_lazy('library')
+    template_name = 'imager_images/add_photo.html'
+    model = Photo
+    form_class = AddPhotoForm
+
+    def form_valid(self, form):
+        """If form post is successful, set the object's owner."""
+        form.instance.owner = self.request.user.profile
+        return super(AddPhotoView, self).form_valid(form)
 
 
 class AddAlbumView(LoginRequiredMixin, CreateView):
@@ -119,7 +136,6 @@ class AddAlbumView(LoginRequiredMixin, CreateView):
         form = super(AddAlbumView, self).get_form()
         form.fields['cover_photo'].queryset = self.request.user.profile.photos.all()
         form.fields['photos'].queryset = self.request.user.profile.photos.all()
-        # import pdb; pdb.set_trace()
         return form
 
     def form_valid(self, form):
@@ -155,23 +171,6 @@ class EditAlbumView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return form
 
 
-class AddPhotoView(LoginRequiredMixin, CreateView):
-    """Add a new photo."""
-
-    login_required = True
-    success_url = reverse_lazy('library')
-    template_name = 'imager_images/add_photo.html'
-    model = Photo
-    form_class = AddPhotoForm
-
-    def form_valid(self, form):
-        """If form post is successful, set the object's owner."""
-        self.object = form.save()
-        self.object.owner = self.request.user.profile
-        self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-
 class EditPhotoView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """Edit a photo."""
 
@@ -190,6 +189,27 @@ class EditPhotoView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return photo.owner.user == self.request.user
 
 
+class DeletePhotoView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """Delete a photo."""
+
+    login_required = True
+    success_url = reverse_lazy('library')
+    template_name = 'imager_images/edit_photo.html'
+    model = Photo
+    form_class = EditPhotoForm
+    form_class.Meta.exclude.append('photo')
+    raise_exception = True
+    permission_denied_message = "You don't have access to this album."
+
+    def test_func(self):
+        """Override the userpassestest test_func."""
+        photo = self.get_object()
+        return photo.owner.user == self.request.user
+
+    def get_context_data(self):
+        import ipdb; ipdb.set_trace()
+
+
 class TagPhotoGalleryView(ListView):
     """List photos with a tag."""
 
@@ -198,10 +218,11 @@ class TagPhotoGalleryView(ListView):
 
     def get_queryset(self):
         """Define a restricted queryset just for certain tag."""
-        return Photo.public.filter(tags__slug=self.kwargs.get("slug")).all()
+        return Photo.public.filter(tags__slug=self.kwargs["slug"])
 
     def get_context_data(self, **kwargs):
         """Get context."""
         context = super(TagPhotoGalleryView, self).get_context_data(**kwargs)
-        context["tag"] = self.kwargs.get("slug")
+        context["users_photos"] = self.request.user.profile.photos.filter(tags__slug=self.kwargs["slug"])
+        context["tag"] = self.kwargs["slug"]
         return context
