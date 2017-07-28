@@ -1,0 +1,15 @@
+span.desc {
+    max-width: 70%;
+}
+
+.panel-body.crop {
+    padding: 5px;
+}
+
+img {
+    width: 99%;
+}
+
+/*.photo-panel {
+    display: inline-block;
+}*/
