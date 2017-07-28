@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load thumbnail %}
+
 {% block css %}<link href="{% static 'style.css' %}" rel="stylesheet">{% endblock %}
 
 {% block title %}{{profile.user}}'s Library{% endblock %}
@@ -7,9 +9,11 @@
 
 {% block body %}
 <div class="container">
-  <div class="row">
-    {% if user.is_authenticated %}
+    <div class="row">
+        {% if albums %}
         <h1>{{ user.username }}'s Albums</h1>
+        <hr>
+        {% endif %}
         {% for album in albums %}
         <div class="col-sm-4 photo_panel">
               <div class="panel panel-success">
@@ -27,60 +31,62 @@
               </div>
             </div>
         {% endfor %}
-        </div>
-        <nav class='page-nav'>
-            <ul>
-                {% if albums.has_previous %}
-                <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.previous_page_number}}&photos_per_page={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&larr;
-                </a></li>
-                {% endif %}
-                {% if albums.has_next %}
-                <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.next_page_number}}&photos_per={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&rarr;
-                </a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </div><br>
-        <hr>
-        <div class="container">
-        <h1>{{ user.username }}'s Photos</h1>
-        {% for photo in photos %}
-            <div class="col-sm-4 photo_panel">
-                <div class="panel panel-success">
-                    <a href="{% url 'photo' photo.id %}">
-                        <div class="panel-heading">{{photo.title}}</div>
-                    </a>
-                    <div class="panel-body crop">
-                        <a class="fancybox" rel="gallery2" href="{{photo.photo.url}}">
-                            <img src="{{ photo.photo.url }}" height = 100, width= 100/>
-                        </a>
-                    </div>
-                    <div class="panel-footer">{{photo.description}}</div>
-                    {% if photo.tags.all %}
-                    <div class="panel-footer tag_footer">
-                        {% for tag in photo.tags.all %}
-                            <a class='tag' href="{% url "tagged_photos" tag.slug %}">{{ tag }}</a>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
-        </div>
-        <nav class='page-nav'>
-            <ul>
-                {% if photos.has_previous %}
-                <li><a href="?photo_page={{ photos.previous_page_number }}&album_page={{ albums.number}}&photos_per={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&larr;
-                </a></li>
-                {% endif %}
-                {% if photos.has_next %}
-                <li><a href="?photo_page={{photos.next_page_number }}&album_page={{albums.number}}&photos_per={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&rarr;
-                </a></li>
-                {% endif %}
-            </ul>
-        </nav>
-</div><br>
+    </div>
+    <nav class='page-nav'>
+        <ul>
+            {% if albums.has_previous %}
+            <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.previous_page_number}}&photos_per_page={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&larr;
+            </a></li>
+            {% endif %}
+            {% if albums.has_next %}
+            <li><a href="?photo_page={{ photos.number }}&album_page={{ albums.next_page_number}}&photos_per={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&rarr;
+            </a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+<hr>
+<div class="container" style="background-color: #cdc;">
+    {% if photos %}
+    <h1>{{ user.username }}'s Photos</h1>
     {% endif %}
+    {% for photo in photos %}
+        <div class="col-sm-4 photo_panel">
+            <div class="panel panel-success">
+                <a href="{% url 'photo' photo.id %}">
+                    <div class="panel-heading">{{photo.title}}</div>
+                </a>
+                <div class="panel-body crop">
+                    <a class="fancybox" rel="gallery2" href="{{photo.photo.url}}">
+                        <img src="{% thumbnail photo.photo 300x300 crop %}"/>
+                    </a>
+                </div>
+                <div class="panel-footer">{{photo.description}}</div>
+                {% if photo.tags.all %}
+                <div class="panel-footer tag_footer">
+                    {% for tag in photo.tags.all %}
+                        <a class='tag' href="{% url "tagged_photos" tag.slug %}">{{ tag }}</a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+<nav class='page-nav'>
+    <ul>
+        {% if photos.has_previous %}
+        <li><a href="?photo_page={{ photos.previous_page_number }}&album_page={{ albums.number}}&photos_per={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&larr;
+        </a></li>
+        {% endif %}
+        {% if photos.has_next %}
+        <li><a href="?photo_page={{photos.next_page_number }}&album_page={{albums.number}}&photos_per={{photos.paginator.per_page}}&albums_per={{albums.paginator.per_page}}">&rarr;
+        </a></li>
+        {% endif %}
+    </ul>
+</nav>
+</div>
+<br>
 </ul>
 {% endblock %}
 {% block scripts %}

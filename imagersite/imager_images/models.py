@@ -29,7 +29,6 @@ class BaseItem(models.Model):
 
     objects = models.Manager()
     public = PublicManager()
-    tags = TaggableManager(blank=True)
     title = models.CharField(max_length=128)
     owner = models.ForeignKey(ImagerProfile,
                               null=True,
@@ -55,6 +54,7 @@ class Photo(BaseItem):
     """Photo model."""
 
     photo = ThumbnailerImageField(upload_to='')
+    tags = TaggableManager(blank=True)
 
 
 @python_2_unicode_compatible
