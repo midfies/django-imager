@@ -3,63 +3,46 @@ from imager_images.models import Album, Photo
 from django import forms
 
 
-class AddAlbumForm(forms.ModelForm):
+EXCLUDE = [
+    'owner',
+    'date_uploaded',
+    'date_modified',
+    'date_published',
+]
+
+
+class BaseMeta:
+        """Define what should be in the form."""
+
+        exclude = EXCLUDE
+        widgets = {
+            'description': forms.Textarea(attrs={'rows':4, 'cols':15}),
+        }
+
+
+class AlbumForm(forms.ModelForm):
     """Form to add new album."""
 
-    class Meta:
+    class Meta(BaseMeta):
         """Define model and stuff."""
 
         model = Album
-        exclude = [
-            'date_uploaded',
-            'date_modified',
-            'date_published',
-            'owner'
-        ]
-
-
-class EditAlbumForm(forms.ModelForm):
-    """Form to add new album."""
-
-    class Meta:
-        """Define the model and exclude fields."""
-
-        model = Album
-        exclude = [
-            'owner',
-            'date_uploaded',
-            'date_modified',
-            'date_published',
-            'owner'
-        ]
 
 
 class AddPhotoForm(forms.ModelForm):
     """Form to add new photo."""
 
-    class Meta:
+    class Meta(BaseMeta):
         """Define what should be in the form."""
 
         model = Photo
-        exclude = [
-            'owner',
-            'date_uploaded',
-            'date_modified',
-            'date_published',
-        ]
 
 
 class EditPhotoForm(forms.ModelForm):
     """Form to add new album."""
 
-    class Meta:
+    class Meta(BaseMeta):
         """Define what should be in the form."""
 
         model = Photo
-        exclude = [
-            'owner',
-            'date_uploaded',
-            'date_modified',
-            'date_published',
-            'photo'
-        ]
+        # exclude = EXCLUDE + ['photo']
